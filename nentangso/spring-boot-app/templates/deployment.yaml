@@ -151,11 +151,11 @@ spec:
           env:
             - name: BITNAMI_DEBUG
               value: {{ ternary "true" "false" (or .Values.image.debug .Values.diagnosticMode.enabled) | quote }}
-            {{- if .Values.externalProfile.enabled}}
+            {{- if .Values.springProfilesActive }}
             - name: SPRING_PROFILES_ACTIVE
-              value: {{ .Values.externalProfile.name }}
+              value: {{ .Values.springProfilesActive | quote }}
             {{- end }}
-            {{- if .Values.caCerts.enabled}}
+            {{- if .Values.caCerts.enabled }}
             - name: SONARQUBE_MOUNTED_PROVISIONING_DIR
               value: {{ .Values.provisioningFolder }}
             {{- end }}
