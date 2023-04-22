@@ -1,61 +1,379 @@
-apiVersion: apps/v1
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
-  name: {{ include "spring-boot-app.fullname" . }}
-  labels:
-    {{- include "spring-boot-app.labels" . | nindent 4 }}
+  name: {{ include "common.names.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- if .Values.updateStrategy }}
+  strategy: {{- toYaml .Values.updateStrategy | nindent 4 }}
   {{- end }}
   selector:
-    matchLabels:
-      {{- include "spring-boot-app.selectorLabels" . | nindent 6 }}
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      labels:
-        {{- include "spring-boot-app.selectorLabels" . | nindent 8 }}
+        {{- if (include "spring.createSecret" .) }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if (include "spring.db.createSecret" .) }}
+        checksum/secret-externaldb: {{ include (print $.Template.BasePath "/secret-external-db.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if (include "spring.redis.createSecret" .) }}
+        checksum/secret-redis: {{ include (print $.Template.BasePath "/secret-external-redis.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if (include "spring.keycloak.registration.oidc.createSecret" .) }}
+        checksum/secret-keycloak: {{ include (print $.Template.BasePath "/secret-external-keycloak.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.metrics.jmx.enabled }}
+        checksum/jmx-configuration: {{ include (print $.Template.BasePath "/jmx-configmap.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        {{- if .Values.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
+        {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      serviceAccountName: {{ include "spring.serviceAccountName" . }}
+      {{- include "spring.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.hostAliases "context" $) | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "spring-boot-app.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      containers:
-        - name: {{ .Chart.Name }}
+      {{- if .Values.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.schedulerName }}
+      schedulerName: {{ .Values.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.initContainers .Values.sysctl.enabled (and .Values.volumePermissions.enabled .Values.persistence.enabled) }}
+      initContainers:
+        {{- if .Values.caCerts.enabled }}
+        - name:  {{ printf "%s-ca-certs-initcontainer" (include "common.names.fullname" .) }}
+          image: {{ include "spring.image" . }}
+          imagePullPolicy: {{ .Values.caCerts.image.pullPolicy  }}
+          command: [ "sh" ]
+          args: [ "-c", "cp -f \"${JAVA_HOME}/lib/security/cacerts\" {{ .Values.provisioningFolder }}/certs/cacerts; if [ \"$(ls /tmp/secrets/ca-certs)\" ]; then for f in /tmp/secrets/ca-certs/*; do keytool -importcert -file \"${f}\" -alias \"$(basename \"${f}\")\" -keystore {{ .Values.provisioningFolder }}/certs/cacerts -storepass changeit -trustcacerts -noprompt; done; fi;" ]
+          volumeMounts:
+            - name: provisioning
+              mountPath: {{ .Values.provisioningFolder }}/certs
+              subPath: certs
+            - mountPath: /tmp/secrets/ca-certs
+              name: ca-certs
+          resources: {{- toYaml .Values.caCerts.resources | nindent 12 }}
+          securityContext: {{- .Values.caCerts.containerSecurityContext | toYaml | nindent 12 }}
+        {{- end }}
+        {{- if .Values.sysctl.enabled }}
+        ## Image that performs the sysctl operation to modify Kernel settings (needed sometimes to avoid boot errors)
+        - name: sysctl
+          image: {{ include "spring.sysctl.image" . }}
+          imagePullPolicy: {{ .Values.sysctl.image.pullPolicy | quote }}
+          command:
+            - /bin/bash
+            - -ec
+            - |
+              {{- include "spring.sysctl.ifLess" (dict "key" "vm.max_map_count" "value" "262144") | nindent 14 }}
+              {{- include "spring.sysctl.ifLess" (dict "key" "fs.file-max" "value" "65536") | nindent 14 }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            privileged: true
+            runAsUser: 0
+          {{- if .Values.sysctl.resources }}
+          resources: {{- toYaml .Values.sysctl.resources | nindent 12 }}
+          {{- end }}
+        {{- end }}
+        {{- if and .Values.volumePermissions.enabled .Values.persistence.enabled }}
+        - name: volume-permissions
+          image: {{ include "spring.volumePermissions.image" . }}
+          imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              find /bitnami/spring -mindepth 1 -maxdepth 1 -not -name ".snapshot" -not -name "lost+found" | xargs -r chown -R {{ .Values.containerSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }}
+          {{- if .Values.volumePermissions.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.volumePermissions.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.volumePermissions.resources }}
+          resources: {{- toYaml .Values.volumePermissions.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: spring
+              mountPath: /bitnami/spring
+              subPath: data
+        {{- end }}
+        {{- if .Values.initContainers }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: spring
+          image: {{ include "spring.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.args "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: BITNAMI_DEBUG
+              value: {{ ternary "true" "false" (or .Values.image.debug .Values.diagnosticMode.enabled) | quote }}
+            {{- if .Values.externalProfile.enabled}}
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.externalProfile.name }}
+            {{- end }}
+            {{- if .Values.caCerts.enabled}}
+            - name: SONARQUBE_MOUNTED_PROVISIONING_DIR
+              value: {{ .Values.provisioningFolder }}
+            {{- end }}
+            {{- if not .Values.springWebflux}}
+            - name: SPRING_DATASOURCE_URL
+              value: {{ include "spring.datasource.url" . | quote }}
+            - name: SPRING_DATASOURCE_USERNAME
+              value: {{ include "spring.datasource.username" . | quote }}
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "spring.datasource.secretName" . }}
+                  key: password
+            {{- else}}
+            - name: SPRING_LIQUIBASE_URL
+              value: {{ include "spring.datasource.url" . | quote }}
+            - name: SPRING_R2DBC_URL
+              value: {{ include "spring.r2dbc.url" . | quote }}
+            - name: SPRING_R2DBC_USERNAME
+              value: {{ include "spring.datasource.username" . | quote }}
+            - name: SPRING_R2DBC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "spring.datasource.secretName" . }}
+                  key: password
+            {{- end}}
+            {{- if or (and .Values.redis.enabled .Values.redis.auth.enabled) (and (not .Values.redis.enabled) (or .Values.externalRedis.password .Values.externalRedis.existingSecret)) }}
+            - name: SPRING_REDIS_HOST
+              value: {{ include "spring.redis.host" . | quote }}
+            - name: SPRING_REDIS_PORT
+              value: {{ include "spring.redis.port" . | quote }}
+            - name: SPRING_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "spring.redis.secretName" . }}
+                  key: {{ include "spring.redis.secretPasswordKey" . }}
+            {{- end }}
+            {{- if .Values.aws.enabled }}
+            - name: AWS_S3_ACCESSKEY
+              value: {{ include "spring.aws.accessKey" . | quote }}
+            - name: AWS_S3_SECRETKEY
+              value: {{ include "spring.aws.secretKey" . | quote }}
+            {{- end }}
+            {{- if .Values.kafka.enabled }}
+            - name: SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS
+              value: {{ include "spring.kafka.host" . | quote }}
+            {{- end }}
+            {{- if .Values.elasticsearch.enabled }}
+            - name: SPRING_ELASTICSEARCH_URIS_0
+              value: {{ include "spring.elasticsearch.host0" . | quote }}
+            - name: SPRING_ELASTICSEARCH_URIS_1
+              value: {{ include "spring.elasticsearch.host1" . | quote }}
+            - name: SPRING_ELASTICSEARCH_URIS_2
+              value: {{ include "spring.elasticsearch.host2" . | quote }}
+            - name: SPRING_ELASTICSEARCH_USERNAME
+              value: {{ include "spring.elasticsearch.username" . | quote }}
+            - name: SPRING_ELASTICSEARCH_PASSWORD
+              value: {{ include "spring.elasticsearch.password" . | quote }}
+            {{- end }}
+            - name: JHIPSTER_CACHE_REDIS_SERVER
+              value: {{ include "spring.redis.server" . | quote }}
+            - name: JHIPSTER_MAIL_FROM
+              value: {{ .Values.springEmail | quote }}
+            {{- if .Values.smtpHost }}
+            - name: SPRING_MAIL_HOST
+              value: {{ .Values.smtpHost | quote }}
+            {{- end }}
+            {{- if .Values.smtpPort }}
+            - name: SPRING_MAIL_PORT
+              value: {{ .Values.smtpPort | quote }}
+            {{- end }}
+            {{- if .Values.smtpUser }}
+            - name: SPRING_MAIL_USER
+              value: {{ .Values.smtpUser | quote }}
+            {{- end }}
+            {{- if or .Values.smtpPassword .Values.smtpExistingSecret }}
+            - name: SPRING_MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "spring.smtpSecretName" . }}
+                  key: smtp-password
+            {{- end }}
+            {{- if .Values.smtpProtocol }}
+            - name: SPRING_MAIL_PROTOCOL
+              value: {{ .Values.smtpProtocol | quote }}
+            {{- end }}
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_OIDC_ISSUER_URI
+              value: {{ include "spring.keycloak.provider.oidc.issuer-uri" . | quote }}
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_ID
+              value: {{ include "spring.keycloak.registration.oidc.client" . | quote }}
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "spring.keycloak.registration.oidc.secretName" . }}
+                  key: {{ include "spring.keycloak.registration.oidc.clientSecretKey" . }}
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_SCOPE
+              value: {{ include "spring.keycloak.registration.oidc.scope" . | quote }}
+            - name: SERVER_PORT
+              value: {{ .Values.containerPorts.http | quote }}
+            {{- if .Values.extraProperties }}
+            - name: SONARQUBE_EXTRA_PROPERTIES
+              value: {{ join "," .Values.extraProperties | quote }}
+            {{- end }}
+            - name: SPRING_APPLICATION_JSON
+              value: {{ .Values.springApplicationYaml | toJson | quote }}
+            - name: JAVA_OPTS
+              value: {{ template "spring.javaOpts" . }}
+            {{- if .Values.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.resources }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
-          livenessProbe:
+              containerPort: {{ .Values.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customLivenessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.livenessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /
+              path: /management/health/liveness
               port: http
-          readinessProbe:
+          {{- end }}
+          {{- if .Values.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customReadinessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.readinessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /
+              path: /management/health/readiness
               port: http
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+          {{- end }}
+          {{- if .Values.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customStartupProbe "context" $) | nindent 12 }}
+          {{- else if .Values.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.startupProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: http
+          {{- end }}
+          {{- end }}
+          {{- if .Values.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /bitnami/spring
+              name: spring
+            {{- if .Values.caCerts.enabled }}
+            - name: provisioning
+              mountPath: {{ .Values.provisioningFolder }}
+            {{- end }}
+          {{- if .Values.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.metrics.jmx.enabled }}
+        - name: jmx-exporter
+          image: {{ include "spring.metrics.jmx.image" . }}
+          imagePullPolicy: {{ .Values.metrics.jmx.image.pullPolicy | quote }}
+          {{- if .Values.metrics.jmx.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.metrics.jmx.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - java
+            - -XX:MaxRAMPercentage=100
+            - -XshowSettings:vm
+            - -jar
+            - jmx_prometheus_httpserver.jar
+            - {{ .Values.metrics.jmx.containerPorts.metrics | quote }}
+            - /etc/jmx/spring-prometheus.yml
+          {{- end }}
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.metrics.jmx.containerPorts.metrics }}
+          {{- if .Values.metrics.jmx.resources }}
+          resources: {{- toYaml .Values.metrics.jmx.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: jmx-config
+              mountPath: /etc/jmx
+        {{- end }}
+        {{- if .Values.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{- if .Values.caCerts.enabled }}
+        - name: provisioning
+          emptyDir: {}
+        {{- end }}
+        {{- if .Values.caCerts.enabled }}
+        - name: ca-certs
+          secret:
+            secretName: {{ .Values.caCerts.secret }}
+        {{- end }}
+        - name: spring
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ (tpl .Values.persistence.existingClaim .) | default (include "common.names.fullname" .) }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        {{- if .Values.metrics.jmx.enabled }}
+        - name: jmx-config
+          configMap:
+            name: {{ printf "%s-jmx-conf" (include "common.names.fullname" .) }}
+        {{- end }}
+        {{- if .Values.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
