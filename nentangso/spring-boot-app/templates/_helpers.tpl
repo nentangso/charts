@@ -437,40 +437,6 @@ Return the keycloak secret key
 {{- end -}}
 
 {{/*
-Return the elasticsearch information
-*/}}
-
-{{- define "spring.elasticsearch.host0" -}}
-{{- if and .Values.elasticsearch.enabled .Values.elasticsearch.auth.uri0 }}
-    {{- printf "%s" .Values.elasticsearch.auth.uri0 -}}
-{{- end -}}
-{{- end -}}
-
-{{- define "spring.elasticsearch.host1" -}}
-{{- if and .Values.elasticsearch.enabled .Values.elasticsearch.auth.uri1 }}
-    {{- printf "%s" .Values.elasticsearch.auth.uri1 -}}
-{{- end -}}
-{{- end -}}
-
-{{- define "spring.elasticsearch.host2" -}}
-{{- if and .Values.elasticsearch.enabled .Values.elasticsearch.auth.uri2 }}
-    {{- printf "%s" .Values.elasticsearch.auth.uri2 -}}
-{{- end -}}
-{{- end -}}
-
-{{- define "spring.elasticsearch.username" -}}
-{{- if and .Values.elasticsearch.enabled .Values.elasticsearch.auth.enabled }}
-    {{- printf "%s" .Values.elasticsearch.auth.username -}}
-{{- end -}}
-{{- end -}}
-
-{{- define "spring.elasticsearch.password" -}}
-{{- if and .Values.elasticsearch.enabled .Values.elasticsearch.auth.enabled }}
-    {{- printf "%s" .Values.elasticsearch.auth.password -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Return the kafka information
 */}}
 

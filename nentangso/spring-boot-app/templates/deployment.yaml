@@ -203,18 +203,6 @@ spec:
             - name: SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS
               value: {{ include "spring.kafka.host" . | quote }}
             {{- end }}
-            {{- if .Values.elasticsearch.enabled }}
-            - name: SPRING_ELASTICSEARCH_URIS_0
-              value: {{ include "spring.elasticsearch.host0" . | quote }}
-            - name: SPRING_ELASTICSEARCH_URIS_1
-              value: {{ include "spring.elasticsearch.host1" . | quote }}
-            - name: SPRING_ELASTICSEARCH_URIS_2
-              value: {{ include "spring.elasticsearch.host2" . | quote }}
-            - name: SPRING_ELASTICSEARCH_USERNAME
-              value: {{ include "spring.elasticsearch.username" . | quote }}
-            - name: SPRING_ELASTICSEARCH_PASSWORD
-              value: {{ include "spring.elasticsearch.password" . | quote }}
-            {{- end }}
             - name: JHIPSTER_CACHE_REDIS_SERVER
               value: {{ include "spring.redis.server" . | quote }}
             - name: JHIPSTER_MAIL_FROM

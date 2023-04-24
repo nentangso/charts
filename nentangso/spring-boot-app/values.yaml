@@ -190,7 +190,6 @@ extraSecrets: {}
 ##
 replicaCount: 1
 ## @param containerPorts.http Spring Boot App HTTP container port
-## @param containerPorts.elastic Spring Boot App Elasticsearch container port
 ##
 containerPorts:
   http: 8081
@@ -381,18 +380,15 @@ service:
   ##
   type: ClusterIP
   ## @param service.ports.http Spring Boot App service HTTP port
-  ## @param service.ports.elastic Spring Boot App service ElasticSearch port
   ##
   ports:
     http: 80
   ## Node ports to expose
   ## @param service.nodePorts.http Node port for HTTP
-  ## @param service.nodePorts.elastic Node port for ElasticSearch
   ## NOTE: choose port between <30000-32767>
   ##
   nodePorts:
     http: ""
-    elastic: ""
   ## @param service.clusterIP Spring Boot App service Cluster IP
   ## e.g.:
   ## clusterIP: None
@@ -968,16 +964,6 @@ externalKeycloak:
       existingSecretName: ""
       existingSecretKey: "oidc-client-secret"
       scope: "openid, profile, email, offline_access"
-
-elasticsearch:
-  enabled: false
-  auth:
-    enabled: false
-    username: ""
-    password: ""
-    uri0: ""
-    uri1: ""
-    uri2: ""
 
 kafka:
   enabled: false
