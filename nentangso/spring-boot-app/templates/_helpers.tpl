@@ -437,16 +437,6 @@ Return the keycloak secret key
 {{- end -}}
 
 {{/*
-Return the kafka information
-*/}}
-
-{{- define "spring.kafka.host" -}}
-{{- if and .Values.kafka.enabled  }}
-    {{- printf "%s" .Values.kafka.host -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Return the aws information
 */}}
 

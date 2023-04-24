@@ -965,10 +965,6 @@ externalKeycloak:
       existingSecretKey: "oidc-client-secret"
       scope: "openid, profile, email, offline_access"
 
-kafka:
-  enabled: false
-  host: ""
-
 aws:
   enabled: false
   AWS_S3_ACCESSKEY: ""

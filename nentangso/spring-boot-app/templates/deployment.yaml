@@ -199,10 +199,6 @@ spec:
             - name: AWS_S3_SECRETKEY
               value: {{ include "spring.aws.secretKey" . | quote }}
             {{- end }}
-            {{- if .Values.kafka.enabled }}
-            - name: SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS
-              value: {{ include "spring.kafka.host" . | quote }}
-            {{- end }}
             - name: JHIPSTER_CACHE_REDIS_SERVER
               value: {{ include "spring.redis.server" . | quote }}
             - name: JHIPSTER_MAIL_FROM
