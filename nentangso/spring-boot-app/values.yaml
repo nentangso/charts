@@ -908,7 +908,6 @@ externalDatabase:
   ##
   port: 3306
 
-
 ## @section Redis&reg; parameters
 
 ## Redis&reg; chart configuration
@@ -965,13 +964,5 @@ externalKeycloak:
       existingSecretKey: "oidc-client-secret"
       scope: "openid, profile, email, offline_access"
 
-aws:
-  enabled: false
-  AWS_S3_ACCESSKEY: ""
-  AWS_S3_SECRETKEY: ""
-
 postgres:
-  enabled: false
-
-externalProfile:
   enabled: false
