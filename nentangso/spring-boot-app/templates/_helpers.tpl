@@ -435,19 +435,3 @@ Return the keycloak secret key
     {{- end -}}
 {{- end -}}
 {{- end -}}
-
-{{/*
-Return the aws information
-*/}}
-
-{{- define "spring.aws.accessKey" -}}
-{{- if and .Values.aws.enabled  }}
-    {{- printf "%s" .Values.aws.accessKey -}}
-{{- end -}}
-{{- end -}}
-
-{{- define "spring.aws.secretKey" -}}
-{{- if and .Values.aws.enabled  }}
-    {{- printf "%s" .Values.aws.secretKey -}}
-{{- end -}}
-{{- end -}}

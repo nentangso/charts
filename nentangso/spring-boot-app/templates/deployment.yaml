@@ -192,15 +192,9 @@ spec:
                 secretKeyRef:
                   name: {{ include "spring.redis.secretName" . }}
                   key: {{ include "spring.redis.secretPasswordKey" . }}
-            {{- end }}
-            {{- if .Values.aws.enabled }}
-            - name: AWS_S3_ACCESSKEY
-              value: {{ include "spring.aws.accessKey" . | quote }}
-            - name: AWS_S3_SECRETKEY
-              value: {{ include "spring.aws.secretKey" . | quote }}
-            {{- end }}
             - name: JHIPSTER_CACHE_REDIS_SERVER
               value: {{ include "spring.redis.server" . | quote }}
+            {{- end }}
             - name: JHIPSTER_MAIL_FROM
               value: {{ .Values.springEmail | quote }}
             {{- if .Values.smtpHost }}
