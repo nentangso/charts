@@ -363,24 +363,6 @@ Return whether Redis&reg; uses password authentication or not
 {{- end -}}
 {{- end -}}
 
-# value for keycloak
-
-{{- define "spring.keycloak.provider.oidc.issuer-uri" -}}
-{{- printf "%s" .Values.externalKeycloak.provider.oidc.issuerUri -}}
-{{- end -}}
-
-{{- define "spring.keycloak.registration.oidc.client" -}}
-{{- printf "%s" .Values.externalKeycloak.registration.oidc.client -}}
-{{- end -}}
-
-{{- define "spring.keycloak.registration.oidc.client-secret" -}}
-{{- printf "%s" .Values.externalKeycloak.registration.oidc.clientSecret -}}
-{{- end -}}
-
-{{- define "spring.keycloak.registration.oidc.scope" -}}
-{{- printf "%s" .Values.externalKeycloak.registration.oidc.scope -}}
-{{- end -}}
-
 {{/*
 Return true if a db secret object should be created
 */}}
@@ -396,42 +378,5 @@ Return true if a redis secret object should be created
 {{- define "spring.redis.createSecret" -}}
 {{- if and (not .Values.redis.enabled) (not .Values.externalRedis.existingSecret) .Values.externalRedis.password }}
     {{- true -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return true if a keycloak secret object should be created
-*/}}
-{{- define "spring.keycloak.registration.oidc.createSecret" -}}
-{{- if and (not .Values.keycloak.enabled) (not .Values.externalKeycloak.registration.oidc.existingSecretName) .Values.externalKeycloak.registration.oidc.clientSecret }}
-    {{- true -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the keycloak secret name
-*/}}
-{{- define "spring.keycloak.registration.oidc.secretName" -}}
-{{- if .Values.keycloak.enabled }}
-    {{- printf "%s" (include "spring.keycloak.fullname" .) -}}
-{{- else if .Values.externalKeycloak.registration.oidc.existingSecretName }}
-    {{- printf "%s" .Values.externalKeycloak.registration.oidc.existingSecretName -}}
-{{- else -}}
-    {{- printf "%s-keycloak" (include "common.names.fullname" .) -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the keycloak secret key
-*/}}
-{{- define "spring.keycloak.registration.oidc.clientSecretKey" -}}
-{{- if .Values.keycloak.enabled -}}
-    {{- print "oidc-client-secret" -}}
-{{- else -}}
-    {{- if .Values.externalKeycloak.registration.oidc.existingSecretName -}}
-        {{- default "oidc-client-secret" .Values.externalKeycloak.registration.oidc.existingSecretKey }}
-    {{- else -}}
-        {{- print "oidc-client-secret" -}}
-    {{- end -}}
 {{- end -}}
 {{- end -}}

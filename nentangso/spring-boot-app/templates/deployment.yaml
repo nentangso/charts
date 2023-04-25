@@ -29,9 +29,6 @@ spec:
         {{- if (include "spring.redis.createSecret" .) }}
         checksum/secret-redis: {{ include (print $.Template.BasePath "/secret-external-redis.yaml") . | sha256sum }}
         {{- end }}
-        {{- if (include "spring.keycloak.registration.oidc.createSecret" .) }}
-        checksum/secret-keycloak: {{ include (print $.Template.BasePath "/secret-external-keycloak.yaml") . | sha256sum }}
-        {{- end }}
         {{- if .Values.metrics.jmx.enabled }}
         checksum/jmx-configuration: {{ include (print $.Template.BasePath "/jmx-configmap.yaml") . | sha256sum }}
         {{- end }}
@@ -220,17 +217,6 @@ spec:
             - name: SPRING_MAIL_PROTOCOL
               value: {{ .Values.smtpProtocol | quote }}
             {{- end }}
-            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_OIDC_ISSUER_URI
-              value: {{ include "spring.keycloak.provider.oidc.issuer-uri" . | quote }}
-            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_ID
-              value: {{ include "spring.keycloak.registration.oidc.client" . | quote }}
-            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "spring.keycloak.registration.oidc.secretName" . }}
-                  key: {{ include "spring.keycloak.registration.oidc.clientSecretKey" . }}
-            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_SCOPE
-              value: {{ include "spring.keycloak.registration.oidc.scope" . | quote }}
             - name: SERVER_PORT
               value: {{ .Values.containerPorts.http | quote }}
             {{- if .Values.extraProperties }}
