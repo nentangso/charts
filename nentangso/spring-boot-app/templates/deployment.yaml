@@ -179,16 +179,18 @@ spec:
                   name: {{ include "spring.datasource.secretName" . }}
                   key: password
             {{- end}}
-            {{- if or (and .Values.redis.enabled .Values.redis.auth.enabled) (and (not .Values.redis.enabled) (or .Values.externalRedis.password .Values.externalRedis.existingSecret)) }}
+            {{- if or (and .Values.redis.enabled .Values.redis.auth.enabled) (and (not .Values.redis.enabled) (or .Values.externalRedis.password .Values.externalRedis.emptyPassword .Values.externalRedis.existingSecret)) }}
             - name: SPRING_REDIS_HOST
               value: {{ include "spring.redis.host" . | quote }}
             - name: SPRING_REDIS_PORT
               value: {{ include "spring.redis.port" . | quote }}
+            {{- if or (and .Values.redis.enabled .Values.redis.auth.enabled) (and (not .Values.redis.enabled) (or .Values.externalRedis.password .Values.externalRedis.existingSecret)) }}
             - name: SPRING_REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "spring.redis.secretName" . }}
                   key: {{ include "spring.redis.secretPasswordKey" . }}
+            {{- end }}
             - name: JHIPSTER_CACHE_REDIS_SERVER
               value: {{ include "spring.redis.server" . | quote }}
             {{- end }}
