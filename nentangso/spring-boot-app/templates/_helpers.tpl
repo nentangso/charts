@@ -268,6 +268,9 @@ Set spring.jvmOpts
     {{- else -}}
         {{ printf "" }}
     {{- end -}}
+    {{- if .Values.jvmOpts -}}
+        {{ printf "%s" .Values.jvmOpts }}
+    {{- end -}}
 {{- end -}}
 
 {{/*

@@ -6,7 +6,48 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-04T02:07:45.078528+07:00"
+    created: "2023-05-29T12:37:27.875601+07:00"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.x.x
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: Spring Boot is an open source Java-based framework used to create
+      a micro Service.
+    digest: f9ca107568b45147b1801e487ac0794947995e85760745126aa8ffd46deb82d7
+    home: https://spring.io/projects/spring-boot
+    icon: https://spring.io/img/logos/spring-initializr.svg
+    keywords:
+    - spring
+    - java
+    - cloud
+    - boot
+    - microservices
+    - web applications
+    - serverless
+    - batch
+    - event driven
+    - reactive
+    maintainers:
+    - name: nentangso
+      url: https://github.com/nentangso
+    name: spring-boot-app
+    sources:
+    - https://github.com/spring-projects/spring-boot
+    urls:
+    - https://nentangso.github.io/charts/spring-boot-app-0.1.9.tgz
+    version: 0.1.9
+  - annotations:
+      category: Application
+      licenses: Apache-2.0
+    apiVersion: v2
+    appVersion: 2.x.x
+    created: "2023-05-29T12:37:27.870335+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -47,7 +88,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-04T02:07:45.073455+07:00"
+    created: "2023-05-29T12:37:27.865175+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -88,7 +129,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-04T02:07:45.068691+07:00"
+    created: "2023-05-29T12:37:27.860244+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -129,7 +170,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-04T02:07:45.062946+07:00"
+    created: "2023-05-29T12:37:27.85429+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -170,7 +211,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-04T02:07:45.057787+07:00"
+    created: "2023-05-29T12:37:27.849152+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -211,7 +252,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-04T02:07:45.051784+07:00"
+    created: "2023-05-29T12:37:27.842839+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -252,7 +293,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-04T02:07:45.045099+07:00"
+    created: "2023-05-29T12:37:27.836472+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -293,7 +334,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-04T02:07:45.038522+07:00"
+    created: "2023-05-29T12:37:27.830076+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -331,7 +372,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2023-05-04T02:07:45.032176+07:00"
+    created: "2023-05-29T12:37:27.822747+07:00"
     description: A Helm chart for Kubernetes
     digest: 5c35ee915197cb625f65611ece310844829ace4129683eedc3e06dfa3963e083
     name: spring-boot-app
@@ -339,4 +380,4 @@ entries:
     urls:
     - https://nentangso.github.io/charts/spring-boot-app-0.1.0.tgz
     version: 0.1.0
-generated: "2023-05-04T02:07:45.029627+07:00"
+generated: "2023-05-29T12:37:27.821418+07:00"

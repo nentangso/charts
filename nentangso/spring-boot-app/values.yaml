@@ -128,7 +128,7 @@ minHeapSize: 1024m
 ## @param maxHeapSize Maximum heap size for Spring Boot App
 ##
 maxHeapSize: 2048m
-## @param jvmOpts Values to add to SONARQUBE_WEB_JVM_OPTS
+## @param jvmOpts Values to add to JAVA_OPTS
 ##
 jvmOpts: ""
 ## @param jvmCeOpts Values to add to SONAR_CE_JAVAOPTS
