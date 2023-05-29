@@ -271,6 +271,9 @@ Set spring.jvmOpts
     {{- if .Values.jvmOpts -}}
         {{ printf "%s" .Values.jvmOpts }}
     {{- end -}}
+    {{- if and .Values.metrics.datadog.enabled .Values.metrics.datadog.apmEnabled -}}
+        {{ printf "%s" .Values.metrics.datadog.jvmAgentOpts }}
+    {{- end -}}
 {{- end -}}
 
 {{/*

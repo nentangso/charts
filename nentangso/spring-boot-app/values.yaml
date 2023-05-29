@@ -877,6 +877,26 @@ metrics:
     ## ref: https://github.com/bitnami/charts/tree/main/bitnami/prometheus-operator#prometheus-configuration
     ##
     selector: {}
+  # Datadog APM
+  datadog:
+    ## @param metrics.datadog.enabled if `true` config datadog agent
+    ##
+    enabled: false
+    ## @param metrics.datadog.env Set value of env `DD_ENV`
+    ##
+    env: prod
+    ## @param metrics.datadog.logsEnabled Set value of env `DD_LOGS_INJECTION`
+    ##
+    logsEnabled: true
+    ## @param metrics.datadog.apmEnabled Add agent to JAVA_OPTS. Requires dd-java-agent.jar is available at /dd-java-agent.jar
+    ##
+    apmEnabled: true
+    ## @param metrics.datadog.jvmAgentOpts Add jvmAgentOpts to JAVA_OPTS
+    ##
+    jvmAgentOpts: "-javaagent:/dd-java-agent.jar"
+    ## @param metrics.datadog.profilingEnabled Set value of env `DD_PROFILING_ENABLED`
+    ##
+    profilingEnabled: false
 
 mysql:
   enabled: false

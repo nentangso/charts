@@ -39,6 +39,11 @@ spec:
         {{- if .Values.podLabels }}
         {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
         {{- end }}
+        {{- if .Values.metrics.datadog.enabled }}
+        tags.datadoghq.com/env: {{ printf "%s" .Values.metrics.datadog.env | quote }}
+        tags.datadoghq.com/service: {{ include "common.names.fullname" . }}
+        tags.datadoghq.com/version: {{ printf "%s" .Values.image.tag | quote }}
+        {{- end }}
     spec:
       serviceAccountName: {{ include "spring.serviceAccountName" . }}
       {{- include "spring.imagePullSecrets" . | nindent 6 }}
@@ -229,6 +234,28 @@ spec:
               value: {{ .Values.springApplicationYaml | toJson | quote }}
             - name: JAVA_OPTS
               value: {{ template "spring.javaOpts" . }}
+            {{- if .Values.metrics.datadog.enabled }}
+            - name: DD_ENV
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/env']
+            - name: DD_SERVICE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/service']
+            - name: DD_VERSION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/version']
+            - name: DD_PROFILING_ENABLED
+              value: {{ printf "%s" .Values.metrics.datadog.profilingEnabled | quote }}
+            - name: DD_LOGS_INJECTION
+              value: {{ printf "%s" .Values.metrics.datadog.logsEnabled | quote }}
+            {{- if .Values.metrics.datadog.logsEnabled }}
+            - name: DD_LOGS_CONFIG_AUTO_MULTI_LINE_DETECTION
+              value: "true"
+            {{- end }}
+            {{- end }}
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -281,6 +308,10 @@ spec:
             {{- if .Values.caCerts.enabled }}
             - name: provisioning
               mountPath: {{ .Values.provisioningFolder }}
+            {{- end }}
+            {{- if and .Values.metrics.datadog.enabled .Values.metrics.datadog.apmEnabled }}
+            - name: datadog-socket
+              mountPath: /var/run/datadog
             {{- end }}
           {{- if .Values.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
@@ -339,6 +370,11 @@ spec:
         - name: jmx-config
           configMap:
             name: {{ printf "%s-jmx-conf" (include "common.names.fullname" .) }}
+        {{- end }}
+        {{- if and .Values.metrics.datadog.enabled .Values.metrics.datadog.apmEnabled }}
+        - name: datadog-socket
+          hostPath:
+            path: /var/run/datadog/
         {{- end }}
         {{- if .Values.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
