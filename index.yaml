@@ -6,7 +6,48 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-29T12:37:27.875601+07:00"
+    created: "2023-05-29T13:47:24.254235+07:00"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.x.x
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: Spring Boot is an open source Java-based framework used to create
+      a micro Service.
+    digest: 5dab8a0cbd7e8014c6d6a6961c037a8a024753954203657c30e0932c9f3e0e2f
+    home: https://spring.io/projects/spring-boot
+    icon: https://spring.io/img/logos/spring-initializr.svg
+    keywords:
+    - spring
+    - java
+    - cloud
+    - boot
+    - microservices
+    - web applications
+    - serverless
+    - batch
+    - event driven
+    - reactive
+    maintainers:
+    - name: nentangso
+      url: https://github.com/nentangso
+    name: spring-boot-app
+    sources:
+    - https://github.com/spring-projects/spring-boot
+    urls:
+    - https://nentangso.github.io/charts/spring-boot-app-0.1.10.tgz
+    version: 0.1.10
+  - annotations:
+      category: Application
+      licenses: Apache-2.0
+    apiVersion: v2
+    appVersion: 2.x.x
+    created: "2023-05-29T13:47:24.301002+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -47,7 +88,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-29T12:37:27.870335+07:00"
+    created: "2023-05-29T13:47:24.295412+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -88,7 +129,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-29T12:37:27.865175+07:00"
+    created: "2023-05-29T13:47:24.290104+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -129,7 +170,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-29T12:37:27.860244+07:00"
+    created: "2023-05-29T13:47:24.285154+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -170,7 +211,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-29T12:37:27.85429+07:00"
+    created: "2023-05-29T13:47:24.279287+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -211,7 +252,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-29T12:37:27.849152+07:00"
+    created: "2023-05-29T13:47:24.273478+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -252,7 +293,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-29T12:37:27.842839+07:00"
+    created: "2023-05-29T13:47:24.267298+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -293,7 +334,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-29T12:37:27.836472+07:00"
+    created: "2023-05-29T13:47:24.261941+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -334,7 +375,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-05-29T12:37:27.830076+07:00"
+    created: "2023-05-29T13:47:24.248809+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -372,7 +413,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2023-05-29T12:37:27.822747+07:00"
+    created: "2023-05-29T13:47:24.241021+07:00"
     description: A Helm chart for Kubernetes
     digest: 5c35ee915197cb625f65611ece310844829ace4129683eedc3e06dfa3963e083
     name: spring-boot-app
@@ -380,4 +421,4 @@ entries:
     urls:
     - https://nentangso.github.io/charts/spring-boot-app-0.1.0.tgz
     version: 0.1.0
-generated: "2023-05-29T12:37:27.821418+07:00"
+generated: "2023-05-29T13:47:24.239892+07:00"
