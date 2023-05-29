@@ -248,9 +248,9 @@ spec:
                 fieldRef:
                   fieldPath: metadata.labels['tags.datadoghq.com/version']
             - name: DD_PROFILING_ENABLED
-              value: {{ printf "%s" .Values.metrics.datadog.profilingEnabled | quote }}
+              value: {{ .Values.metrics.datadog.profilingEnabled | quote }}
             - name: DD_LOGS_INJECTION
-              value: {{ printf "%s" .Values.metrics.datadog.logsEnabled | quote }}
+              value: {{ .Values.metrics.datadog.logsEnabled | quote }}
             {{- if .Values.metrics.datadog.logsEnabled }}
             - name: DD_LOGS_CONFIG_AUTO_MULTI_LINE_DETECTION
               value: "true"
