@@ -251,10 +251,6 @@ spec:
               value: {{ .Values.metrics.datadog.profilingEnabled | quote }}
             - name: DD_LOGS_INJECTION
               value: {{ .Values.metrics.datadog.logsEnabled | quote }}
-            {{- if .Values.metrics.datadog.logsEnabled }}
-            - name: DD_LOGS_CONFIG_AUTO_MULTI_LINE_DETECTION
-              value: "true"
-            {{- end }}
             {{- end }}
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
