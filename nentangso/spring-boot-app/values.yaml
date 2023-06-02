@@ -178,6 +178,15 @@ extraEnvVarsCM: ""
 ## @param extraEnvVarsSecret Name of existing Secret containing extra env vars for Spring Boot App
 ##
 extraEnvVarsSecret: ""
+## @param extraEnvFrom Array with extra envFrom section to add to Spring Boot App
+## e.g:
+## extraEnvFrom:
+##   - configMapRef:
+##       name: "foo"
+##   - secretRef:
+##       name: "bar"
+##
+extraEnvFrom: []
 ## @param extraSecrets Object with extra secret key values for Spring Boot App
 ##
 extraSecrets: {}

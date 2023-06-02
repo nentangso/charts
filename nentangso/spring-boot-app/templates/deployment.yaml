@@ -264,6 +264,9 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
             {{- end }}
+            {{- if .Values.extraEnvFrom }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvFrom "context" $) | nindent 12 }}
+            {{- end }}
           {{- if .Values.resources }}
           resources: {{- toYaml .Values.resources | nindent 12 }}
           {{- end }}
