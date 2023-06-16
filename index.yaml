@@ -6,7 +6,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-02T11:49:31.210062+07:00"
+    created: "2023-06-16T21:11:11.204494+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -47,7 +47,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-02T11:49:31.204557+07:00"
+    created: "2023-06-16T21:11:11.200092+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -88,7 +88,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-02T11:49:31.199305+07:00"
+    created: "2023-06-16T21:11:11.194901+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -129,7 +129,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-02T11:49:31.252955+07:00"
+    created: "2023-06-16T21:11:11.244768+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -170,7 +170,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-02T11:49:31.247916+07:00"
+    created: "2023-06-16T21:11:11.240179+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -211,7 +211,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-02T11:49:31.241833+07:00"
+    created: "2023-06-16T21:11:11.235114+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -252,7 +252,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-02T11:49:31.236517+07:00"
+    created: "2023-06-16T21:11:11.230042+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -293,7 +293,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-02T11:49:31.230624+07:00"
+    created: "2023-06-16T21:11:11.22516+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -334,7 +334,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-02T11:49:31.225878+07:00"
+    created: "2023-06-16T21:11:11.219941+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -375,7 +375,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-02T11:49:31.220416+07:00"
+    created: "2023-06-16T21:11:11.215112+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -416,7 +416,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-02T11:49:31.21531+07:00"
+    created: "2023-06-16T21:11:11.209885+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -457,7 +457,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-02T11:49:31.193834+07:00"
+    created: "2023-06-16T21:11:11.18975+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -495,7 +495,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2023-06-02T11:49:31.185899+07:00"
+    created: "2023-06-16T21:11:11.184752+07:00"
     description: A Helm chart for Kubernetes
     digest: 5c35ee915197cb625f65611ece310844829ace4129683eedc3e06dfa3963e083
     name: spring-boot-app
@@ -503,4 +503,21 @@ entries:
     urls:
     - https://nentangso.github.io/charts/spring-boot-app-0.1.0.tgz
     version: 0.1.0
-generated: "2023-06-02T11:49:31.184733+07:00"
+  webapp:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2023-06-16T21:11:11.245661+07:00"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: Custom Helm chart for webapp
+    digest: ea668a74addb05a58f1c6a022139c13e5318d467bfd69db2be10235ad0c156de
+    name: webapp
+    type: application
+    urls:
+    - https://nentangso.github.io/charts/webapp-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-06-16T21:11:11.182062+07:00"
