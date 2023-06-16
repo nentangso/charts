@@ -203,7 +203,7 @@ resources:
 ## @param podSecurityContext.fsGroup Set webapp pod's Security Context fsGroup
 ##
 podSecurityContext:
-  enabled: true
+  enabled: false
   fsGroup: 1001
 ## Configure Container Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
@@ -212,7 +212,7 @@ podSecurityContext:
 ## @param containerSecurityContext.runAsNonRoot Set webapp containers' Security Context runAsNonRoot
 ##
 containerSecurityContext:
-  enabled: true
+  enabled: false
   runAsUser: 1001
   runAsNonRoot: true
 ## @param hostAliases webapp pods host aliases
@@ -489,7 +489,7 @@ rbac:
 ## @param serviceAccount.annotations Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
 ##
 serviceAccount:
-  create: true
+  create: false
   name: ""
   automountServiceAccountToken: true
   annotations: {}
