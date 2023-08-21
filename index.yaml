@@ -6,7 +6,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-16T21:32:09.365234+07:00"
+    created: "2023-08-22T00:10:05.688754+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -47,7 +47,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-16T21:32:09.360313+07:00"
+    created: "2023-08-22T00:10:05.681428+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -88,7 +88,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-16T21:32:09.354285+07:00"
+    created: "2023-08-22T00:10:05.675888+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -129,7 +129,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-16T21:32:09.407663+07:00"
+    created: "2023-08-22T00:10:05.730037+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -170,7 +170,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-16T21:32:09.40278+07:00"
+    created: "2023-08-22T00:10:05.724829+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -211,7 +211,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-16T21:32:09.397339+07:00"
+    created: "2023-08-22T00:10:05.719748+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -252,7 +252,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-16T21:32:09.39222+07:00"
+    created: "2023-08-22T00:10:05.715145+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -293,7 +293,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-16T21:32:09.386951+07:00"
+    created: "2023-08-22T00:10:05.709897+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -334,7 +334,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-16T21:32:09.381478+07:00"
+    created: "2023-08-22T00:10:05.704162+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -375,7 +375,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-16T21:32:09.376508+07:00"
+    created: "2023-08-22T00:10:05.699055+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -416,7 +416,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-16T21:32:09.370814+07:00"
+    created: "2023-08-22T00:10:05.693754+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -457,7 +457,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-06-16T21:32:09.34833+07:00"
+    created: "2023-08-22T00:10:05.669449+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -495,7 +495,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2023-06-16T21:32:09.340861+07:00"
+    created: "2023-08-22T00:10:05.663815+07:00"
     description: A Helm chart for Kubernetes
     digest: 5c35ee915197cb625f65611ece310844829ace4129683eedc3e06dfa3963e083
     name: spring-boot-app
@@ -509,7 +509,36 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 1.x.x
-    created: "2023-06-16T21:32:09.410357+07:00"
+    created: "2023-08-22T00:10:05.733531+07:00"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: Deploy simple webapp, ex reactjs
+    digest: 5994246c5ba5c17a0d4156092a340b167754b86e0fca1c330be5931f6fce39d0
+    home: https://github.com/nentangso/charts/tree/main/nentangso/webapp
+    icon: https://cdn.cdnlogo.com/logos/r/63/react.svg
+    keywords:
+    - web applications
+    - webapp
+    - sinple page app (SPA)
+    maintainers:
+    - name: nentangso
+      url: https://github.com/nentangso
+    name: webapp
+    sources:
+    - https://github.com/nentangso/charts/tree/main/nentangso/webapp
+    urls:
+    - https://nentangso.github.io/charts/webapp-0.1.2.tgz
+    version: 0.1.2
+  - annotations:
+      category: Application
+      licenses: Apache-2.0
+    apiVersion: v2
+    appVersion: 1.x.x
+    created: "2023-08-22T00:10:05.732609+07:00"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -535,7 +564,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 2.0.0
-    created: "2023-06-16T21:32:09.409369+07:00"
+    created: "2023-08-22T00:10:05.731317+07:00"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -549,4 +578,4 @@ entries:
     urls:
     - https://nentangso.github.io/charts/webapp-0.1.0.tgz
     version: 0.1.0
-generated: "2023-06-16T21:32:09.339951+07:00"
+generated: "2023-08-22T00:10:05.662768+07:00"
