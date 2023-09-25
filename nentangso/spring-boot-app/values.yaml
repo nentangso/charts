@@ -906,6 +906,23 @@ metrics:
     ## @param metrics.datadog.profilingEnabled Set value of env `DD_PROFILING_ENABLED`
     ##
     profilingEnabled: false
+  # opentelemetry
+  opentelemetry:
+    ## @param metrics.opentelemetry.enabled if `true` config datadog agent
+    ##
+    enabled: false
+    ## @param metrics.opentelemetry.env Set value of env `DD_ENV`
+    ##
+    env: prod
+    ## @param metrics.opentelemetry.jvmAgentOpts Add jvmAgentOpts to JAVA_OPTS
+    ##
+    jvmAgentOpts: "-javaagent:/opentelemetry-javaagent.jar -Dotel.logs.exporter=otlp -Dotel.semconv-stability.opt-in=http -Dotel.instrumentation.micrometer.base-time-unit=s -Dotel.instrumentation.log4j-appender.experimental-log-attributes=true -Dotel.instrumentation.logback-appender.experimental-log-attributes=true"
+    ## @param metrics.opentelemetry.exporterOtlpEndpoint Whic protocol tobe used
+    ##
+    exporterOtlpProtocol: grpc
+    ## @param metrics.opentelemetry.exporterOtlpEndpoint Set endpoint of grafana agent
+    ##
+    exporterOtlpEndpoint: http://grafana-agent:4317
 
 mysql:
   enabled: false

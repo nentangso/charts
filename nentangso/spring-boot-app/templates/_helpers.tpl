@@ -274,6 +274,9 @@ Set spring.jvmOpts
     {{- if and .Values.metrics.datadog.enabled .Values.metrics.datadog.apmEnabled -}}
         {{ printf "%s" .Values.metrics.datadog.jvmAgentOpts }}
     {{- end -}}
+    {{- if and .Values.metrics.opentelemetry.enabled -}}
+        {{ printf "%s" .Values.metrics.opentelemetry.jvmAgentOpts }}
+    {{- end -}}
 {{- end -}}
 
 {{/*
