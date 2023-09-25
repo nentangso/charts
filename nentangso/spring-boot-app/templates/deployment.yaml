@@ -48,7 +48,6 @@ spec:
         tags.opentelemetry.io/env: {{ printf "%s" .Values.metrics.opentelemetry.env | quote }}
         tags.opentelemetry.io/service: {{ include "common.names.fullname" . }}
         tags.opentelemetry.io/version: {{ printf "%s" .Values.image.tag | quote }}
-        tags.opentelemetry.io/resource_attributes: {{ printf "deployment.environment=%s,service.namespace=%s,service.version=%s" .Values.metrics.opentelemetry.env .Release.Namespace .Values.image.tag | quote }}
         {{- end }}
     spec:
       serviceAccountName: {{ include "spring.serviceAccountName" . }}
@@ -260,9 +259,7 @@ spec:
             {{- end }}
             {{- if .Values.metrics.opentelemetry.enabled }}
             - name: OTEL_RESOURCE_ATTRIBUTES
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.labels['tags.opentelemetry.io/resource_attributes']
+              value: {{ printf "deployment.environment=%s,service.namespace=%s,service.version=%s" .Values.metrics.opentelemetry.env .Release.Namespace .Values.image.tag | quote }}
             - name: OTEL_SERVICE_NAME
               valueFrom:
                 fieldRef:
