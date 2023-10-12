@@ -6,7 +6,48 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.281758+07:00"
+    created: "2023-10-12T11:06:39.215176+07:00"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.x.x
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: Spring Boot is an open source Java-based framework used to create
+      a micro Service.
+    digest: 6613240358c9ad95cdf33691d1e4834a7c85ab72777a2d69f40b7cda90316554
+    home: https://spring.io/projects/spring-boot
+    icon: https://spring.io/img/logos/spring-initializr.svg
+    keywords:
+    - spring
+    - java
+    - cloud
+    - boot
+    - microservices
+    - web applications
+    - serverless
+    - batch
+    - event driven
+    - reactive
+    maintainers:
+    - name: nentangso
+      url: https://github.com/nentangso
+    name: spring-boot-app
+    sources:
+    - https://github.com/spring-projects/spring-boot
+    urls:
+    - https://nentangso.github.io/charts/spring-boot-app-0.1.15.tgz
+    version: 0.1.15
+  - annotations:
+      category: Application
+      licenses: Apache-2.0
+    apiVersion: v2
+    appVersion: 2.x.x
+    created: "2023-10-12T11:06:39.210765+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -47,7 +88,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.276554+07:00"
+    created: "2023-10-12T11:06:39.205579+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -88,7 +129,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.271596+07:00"
+    created: "2023-10-12T11:06:39.200274+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -129,7 +170,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.26703+07:00"
+    created: "2023-10-12T11:06:39.195298+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -170,7 +211,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.261274+07:00"
+    created: "2023-10-12T11:06:39.189934+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -211,7 +252,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.323933+07:00"
+    created: "2023-10-12T11:06:39.25686+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -252,7 +293,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.3186+07:00"
+    created: "2023-10-12T11:06:39.251655+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -293,7 +334,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.313384+07:00"
+    created: "2023-10-12T11:06:39.246166+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -334,7 +375,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.308696+07:00"
+    created: "2023-10-12T11:06:39.241434+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -375,7 +416,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.303534+07:00"
+    created: "2023-10-12T11:06:39.236317+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -416,7 +457,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.298749+07:00"
+    created: "2023-10-12T11:06:39.230882+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -457,7 +498,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.292532+07:00"
+    created: "2023-10-12T11:06:39.226035+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -498,7 +539,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.286624+07:00"
+    created: "2023-10-12T11:06:39.220429+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -539,7 +580,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2023-09-25T17:18:32.256117+07:00"
+    created: "2023-10-12T11:06:39.184772+07:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -577,7 +618,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2023-09-25T17:18:32.248862+07:00"
+    created: "2023-10-12T11:06:39.178073+07:00"
     description: A Helm chart for Kubernetes
     digest: 5c35ee915197cb625f65611ece310844829ace4129683eedc3e06dfa3963e083
     name: spring-boot-app
@@ -591,7 +632,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 1.x.x
-    created: "2023-09-25T17:18:32.32781+07:00"
+    created: "2023-10-12T11:06:39.260841+07:00"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -620,7 +661,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 1.x.x
-    created: "2023-09-25T17:18:32.32654+07:00"
+    created: "2023-10-12T11:06:39.259561+07:00"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -646,7 +687,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 2.0.0
-    created: "2023-09-25T17:18:32.32526+07:00"
+    created: "2023-10-12T11:06:39.258287+07:00"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -660,4 +701,4 @@ entries:
     urls:
     - https://nentangso.github.io/charts/webapp-0.1.0.tgz
     version: 0.1.0
-generated: "2023-09-25T17:18:32.247795+07:00"
+generated: "2023-10-12T11:06:39.176895+07:00"
