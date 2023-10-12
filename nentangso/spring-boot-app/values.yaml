@@ -922,7 +922,7 @@ metrics:
     exporterOtlpProtocol: grpc
     ## @param metrics.opentelemetry.exporterOtlpEndpoint Set endpoint of grafana agent
     ##
-    exporterOtlpEndpoint: http://grafana-agent:4317
+    exporterOtlpEndpoint: http://grafana-agent.monitoring.svc.cluster.local:4317
 
 mysql:
   enabled: false
