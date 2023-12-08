@@ -194,6 +194,10 @@ spec:
               value: {{ include "spring.redis.host" . | quote }}
             - name: SPRING_REDIS_PORT
               value: {{ include "spring.redis.port" . | quote }}
+            {{- if .Values.externalRedis.ssl }}
+            - name: SPRING_REDIS_SSL
+              value: "true"
+            {{- end}}
             {{- if or (and .Values.redis.enabled .Values.redis.auth.enabled) (and (not .Values.redis.enabled) (or .Values.externalRedis.password .Values.externalRedis.existingSecret)) }}
             - name: SPRING_REDIS_PASSWORD
               valueFrom:

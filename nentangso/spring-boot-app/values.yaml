@@ -987,6 +987,7 @@ redis:
 externalRedis:
   host: localhost
   port: 6379
+  ssl: false
   emptyPassword: true
   password: ""
   existingSecret: ""

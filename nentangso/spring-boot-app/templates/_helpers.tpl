@@ -322,7 +322,11 @@ Return the Redis&reg; port
 Return the Redis&reg; server
 */}}
 {{- define "spring.redis.server" -}}
+{{- if .Values.externalRedis.ssl -}}
+{{- printf "rediss://" -}}
+{{- else -}}
 {{- printf "redis://" -}}
+{{- end -}}
 {{- if or (and .Values.redis.enabled .Values.redis.auth.enabled) (and (not .Values.redis.enabled) (or .Values.externalRedis.password .Values.externalRedis.existingSecret)) }}
 {{- printf ":%s@" "$(SPRING_REDIS_PASSWORD)" -}}
 {{- end -}}
