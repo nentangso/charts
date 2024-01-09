@@ -33,4 +33,4 @@ maintainers:
 name: spring-boot-app
 sources:
   - https://github.com/spring-projects/spring-boot
-version: 0.2.0
+version: 0.2.1
