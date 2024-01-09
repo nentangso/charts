@@ -221,7 +221,7 @@ Return the Database Port
 {{- if eq "mysql" .Values.externalDatabase.type -}}
 {{- ternary "3306" .Values.externalDatabase.port .Values.mysql.enabled -}}
 {{- else -}}
-{{- printf "%d" .Values.externalDatabase.port -}}
+{{- .Values.externalDatabase.port -}}
 {{- end -}}
 {{- end -}}
 
