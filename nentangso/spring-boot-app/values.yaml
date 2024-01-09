@@ -927,6 +927,9 @@ metrics:
 mysql:
   enabled: false
 
+postgresql:
+  enabled: false
+
 ## @section External Database settings
 ##
 
@@ -934,6 +937,9 @@ mysql:
 ## All of these values are only used when mysql.enabled is set to false
 ##
 externalDatabase:
+  ## @param externalDatabase.type Database type, ex mysql, postgresql
+  ##
+  type: mysql
   ## @param externalDatabase.host Host of an external MySQL instance to connect (only if mysql.enabled=false)
   ##
   host: ""
@@ -974,7 +980,19 @@ redis:
     ## The password value is ignored if existingSecret is set
     password: ""
     existingSecret: ""
+  ## @section Redis&reg; common configuration parameters
+  ## https://github.com/bitnami/containers/tree/main/bitnami/redis#configuration
+  ##
+
+  ## @param architecture Redis&reg; architecture. Allowed values: `standalone` or `replication`
+  ##
   architecture: standalone
+  ## TLS configuration
+  ##
+  tls:
+    ## @param tls.enabled Enable TLS traffic
+    ##
+    enabled: false
 
 ## External Redis&reg; configuration
 ## All of these values are only used when redis.enabled is set to false
@@ -985,13 +1003,9 @@ redis:
 ## @param externalRedis.existingSecretPasswordKey Name of an existing secret key containing the Redis&trade credentials
 ##
 externalRedis:
+  enabled: true
   host: localhost
   port: 6379
-  ssl: false
-  emptyPassword: true
   password: ""
   existingSecret: ""
   existingSecretPasswordKey: "redis-password"
-
-postgres:
-  enabled: false

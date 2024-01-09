@@ -168,7 +168,7 @@ spec:
             {{- end }}
             {{- if not .Values.springWebflux}}
             - name: SPRING_DATASOURCE_URL
-              value: {{ include "spring.datasource.url" . | quote }}
+              value: {{ include "spring.datasource.jdbc_url" . | quote }}
             - name: SPRING_DATASOURCE_USERNAME
               value: {{ include "spring.datasource.username" . | quote }}
             - name: SPRING_DATASOURCE_PASSWORD
@@ -178,9 +178,9 @@ spec:
                   key: password
             {{- else}}
             - name: SPRING_LIQUIBASE_URL
-              value: {{ include "spring.datasource.url" . | quote }}
+              value: {{ include "spring.datasource.jdbc_url" . | quote }}
             - name: SPRING_R2DBC_URL
-              value: {{ include "spring.r2dbc.url" . | quote }}
+              value: {{ include "spring.datasource.r2dbc_url" . | quote }}
             - name: SPRING_R2DBC_USERNAME
               value: {{ include "spring.datasource.username" . | quote }}
             - name: SPRING_R2DBC_PASSWORD
@@ -189,12 +189,12 @@ spec:
                   name: {{ include "spring.datasource.secretName" . }}
                   key: password
             {{- end}}
-            {{- if or (and .Values.redis.enabled .Values.redis.auth.enabled) (and (not .Values.redis.enabled) (or .Values.externalRedis.password .Values.externalRedis.emptyPassword .Values.externalRedis.existingSecret)) }}
+            {{- if or .Values.redis.enabled .Values.externalRedis.enabled }}
             - name: SPRING_REDIS_HOST
               value: {{ include "spring.redis.host" . | quote }}
             - name: SPRING_REDIS_PORT
               value: {{ include "spring.redis.port" . | quote }}
-            {{- if .Values.externalRedis.ssl }}
+            {{- if .Values.redis.tls.enabled }}
             - name: SPRING_REDIS_SSL
               value: "true"
             {{- end}}
@@ -207,6 +207,10 @@ spec:
             {{- end }}
             - name: JHIPSTER_CACHE_REDIS_SERVER
               value: {{ include "spring.redis.server" . | quote }}
+            {{- if eq "replication" .Values.redis.architecture }}
+            - name: JHIPSTER_CACHE_REDIS_CLUSTER
+              value: "true"
+            {{- end }}
             {{- end }}
             - name: JHIPSTER_MAIL_FROM
               value: {{ .Values.springEmail | quote }}
