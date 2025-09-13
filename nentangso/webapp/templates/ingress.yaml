@@ -18,7 +18,7 @@ metadata:
     {{- end }}
   {{- end }}
 spec:
-  {{- if and .Values.ingress.ingressClassName (include "common.ingress.supportsIngressClassname" .) }}
+  {{- if .Values.ingress.ingressClassName }}
   ingressClassName: {{ .Values.ingress.ingressClassName | quote }}
   {{- end }}
   rules:
