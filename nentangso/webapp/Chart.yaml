@@ -22,4 +22,4 @@ maintainers:
 name: webapp
 sources:
   - https://github.com/nentangso/charts/tree/main/nentangso/webapp
-version: 0.1.9
+version: 0.1.10
