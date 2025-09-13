@@ -75,6 +75,13 @@ jobs:
           echo "Updated Chart.yaml version to $NEW_VERSION"
           cat "nentangso/$CHART_NAME/Chart.yaml"
 
+      - name: Update chart dependencies
+        run: |
+          CHART_NAME="${{ steps.chart-info.outputs.chart_name }}"
+          echo "Updating dependencies for: $CHART_NAME"
+          helm dependency update "nentangso/$CHART_NAME"
+          helm dependency list "nentangso/$CHART_NAME"
+
       - name: Package Helm chart
         run: |
           CHART_NAME="${{ steps.chart-info.outputs.chart_name }}"
