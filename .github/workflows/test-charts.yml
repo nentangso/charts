@@ -32,6 +32,12 @@ jobs:
         with:
           version: ${{ env.HELM_VERSION }}
 
+      - name: Update chart dependencies
+        run: |
+          echo "Updating dependencies for: ${{ matrix.chart }}"
+          helm dependency update "nentangso/${{ matrix.chart }}"
+          helm dependency list "nentangso/${{ matrix.chart }}"
+
       - name: Lint chart
         run: |
           echo "Linting chart: ${{ matrix.chart }}"
@@ -83,12 +89,6 @@ jobs:
             echo "ERROR: Chart.yaml not found in package"
             exit 1
           fi
-
-      - name: Test chart dependencies
-        run: |
-          echo "Testing dependencies for: ${{ matrix.chart }}"
-          helm dependency update "nentangso/${{ matrix.chart }}"
-          helm dependency list "nentangso/${{ matrix.chart }}"
 
       - name: Security scan (if available)
         run: |
@@ -146,6 +146,8 @@ jobs:
       - name: Test repository index generation
         run: |
           echo "Testing repository index generation"
+          # Update dependencies first
+          helm dependency update "nentangso/spring-boot-app"
           # Create a temporary package for testing
           helm package "nentangso/spring-boot-app" --destination ./temp
           helm repo index ./temp --url https://nentangso.github.io/charts
