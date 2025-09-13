@@ -6,7 +6,44 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.98020326Z"
+    created: "2025-09-13T23:34:07.814929252Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: Spring Boot is an open source Java-based framework used to create
+      a micro Service.
+    digest: 7031fd2928e48697ae6cba3c3483cd995837195fc5bf092b2bd9d486b0b816cc
+    home: https://spring.io/projects/spring-boot
+    icon: https://spring.io/img/logos/spring-initializr.svg
+    keywords:
+    - spring
+    - java
+    - cloud
+    - boot
+    - microservices
+    - web applications
+    - serverless
+    - batch
+    - event driven
+    - reactive
+    maintainers:
+    - name: nentangso
+      url: https://github.com/nentangso
+    name: spring-boot-app
+    sources:
+    - https://github.com/spring-projects/spring-boot
+    urls:
+    - https://nentangso.github.io/charts/spring-boot-app-1.0.1.tgz
+    version: 1.0.1
+  - annotations:
+      category: Application
+      licenses: Apache-2.0
+    apiVersion: v2
+    appVersion: 2.x.x
+    created: "2025-09-13T23:34:07.812650318Z"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -43,7 +80,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.977067117Z"
+    created: "2025-09-13T23:34:07.810402873Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -84,7 +121,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.970314407Z"
+    created: "2025-09-13T23:34:07.803223597Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -125,7 +162,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.963396175Z"
+    created: "2025-09-13T23:34:07.796787908Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -166,7 +203,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.956674297Z"
+    created: "2025-09-13T23:34:07.789787069Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -207,7 +244,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.949882922Z"
+    created: "2025-09-13T23:34:07.783040104Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -248,7 +285,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.890420499Z"
+    created: "2025-09-13T23:34:07.722884739Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -289,7 +326,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.883554309Z"
+    created: "2025-09-13T23:34:07.711407032Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -330,7 +367,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.876862599Z"
+    created: "2025-09-13T23:34:07.705322744Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -371,7 +408,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.870754958Z"
+    created: "2025-09-13T23:34:07.698464902Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -412,7 +449,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.863998845Z"
+    created: "2025-09-13T23:34:07.692275186Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -453,7 +490,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.857952509Z"
+    created: "2025-09-13T23:34:07.685307546Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -494,7 +531,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.850977004Z"
+    created: "2025-09-13T23:34:07.67829108Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -535,7 +572,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.84432504Z"
+    created: "2025-09-13T23:34:07.671555032Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -576,7 +613,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.94359717Z"
+    created: "2025-09-13T23:34:07.776886866Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -617,7 +654,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.93690524Z"
+    created: "2025-09-13T23:34:07.770045169Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -658,7 +695,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.930011012Z"
+    created: "2025-09-13T23:34:07.763331148Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -699,7 +736,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.924094898Z"
+    created: "2025-09-13T23:34:07.757221151Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -740,7 +777,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.917286379Z"
+    created: "2025-09-13T23:34:07.749926354Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -781,7 +818,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.910405329Z"
+    created: "2025-09-13T23:34:07.743031343Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -822,7 +859,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.904269367Z"
+    created: "2025-09-13T23:34:07.736813083Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -863,7 +900,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.897264202Z"
+    created: "2025-09-13T23:34:07.729678951Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -904,7 +941,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.x.x
-    created: "2025-09-13T23:27:08.838213201Z"
+    created: "2025-09-13T23:34:07.665423415Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -942,7 +979,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2025-09-13T23:27:08.830882928Z"
+    created: "2025-09-13T23:34:07.657696291Z"
     description: A Helm chart for Kubernetes
     digest: 5c35ee915197cb625f65611ece310844829ace4129683eedc3e06dfa3963e083
     name: spring-boot-app
@@ -956,7 +993,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 1.x.x
-    created: "2025-09-13T23:27:08.993454109Z"
+    created: "2025-09-13T23:34:07.833359049Z"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -985,7 +1022,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 1.x.x
-    created: "2025-09-13T23:27:08.991956493Z"
+    created: "2025-09-13T23:34:07.830363818Z"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -1014,7 +1051,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 1.x.x
-    created: "2025-09-13T23:27:08.990403745Z"
+    created: "2025-09-13T23:34:07.827405917Z"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -1043,7 +1080,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 1.x.x
-    created: "2025-09-13T23:27:08.989032004Z"
+    created: "2025-09-13T23:34:07.824865201Z"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -1072,7 +1109,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 1.x.x
-    created: "2025-09-13T23:27:08.986927067Z"
+    created: "2025-09-13T23:34:07.822270398Z"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -1101,7 +1138,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 1.x.x
-    created: "2025-09-13T23:27:08.985499191Z"
+    created: "2025-09-13T23:34:07.820946529Z"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -1130,7 +1167,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 1.x.x
-    created: "2025-09-13T23:27:08.984176531Z"
+    created: "2025-09-13T23:34:07.819640083Z"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -1159,7 +1196,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 1.x.x
-    created: "2025-09-13T23:27:08.982870962Z"
+    created: "2025-09-13T23:34:07.818329409Z"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -1185,7 +1222,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 2.0.0
-    created: "2025-09-13T23:27:08.98153618Z"
+    created: "2025-09-13T23:34:07.816980443Z"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -1199,4 +1236,4 @@ entries:
     urls:
     - https://nentangso.github.io/charts/webapp-0.1.0.tgz
     version: 0.1.0
-generated: "2025-09-13T23:27:08.830369112Z"
+generated: "2025-09-13T23:34:07.657204777Z"
