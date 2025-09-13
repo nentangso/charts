@@ -72,7 +72,7 @@ diagnosticMode:
 ##
 image:
   registry: docker.io
-  repository: my-webapp
+  repository: my-app
   tag: latest
   digest: ""
   ## Specify a imagePullPolicy

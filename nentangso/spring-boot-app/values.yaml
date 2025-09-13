@@ -71,9 +71,9 @@ diagnosticMode:
 ## @param image.debug Enable Spring Boot App image debug mode
 ##
 image:
-  registry: 610881553522.dkr.ecr.ap-southeast-1.amazonaws.com
-  repository: unicorn-admin-starter
-  tag: dev
+  registry: docker.io
+  repository: my-app
+  tag: latest
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -92,16 +92,6 @@ image:
   ##
   debug: false
 
-## @section Spring Boot App Configuration parameters
-## Spring Boot App settings based on environment variables
-## ref: https://github.com/bitnami/containers/tree/main/bitnami/spring#environment-variables
-## @param springUsername Spring Boot App username
-##
-springUsername: user
-## @param springPassword Spring Boot App user password
-## Defaults to a random 10-character alphanumeric string if not set
-##
-springPassword: ""
 ## @param springWebflux
 ## Defaults to false
 ##
@@ -114,14 +104,6 @@ springApplicationYaml: {}
 ## @param provisioningFolder Directory to use for provisioning content to Sonarqube
 ##
 provisioningFolder: "/bitnami/spring-provisioning"
-## @param existingSecret Name of existing secret containing Spring Boot App credentials
-## NOTE: Must contain key `spring-password`
-## NOTE: When it's set, the `springPassword` parameter is ignored
-##
-existingSecret: ""
-## @param springEmail Spring Boot App user email
-##
-springEmail: user@example.com
 ## @param minHeapSize Minimum heap size for Spring Boot App
 ##
 minHeapSize: 1024m
@@ -134,31 +116,6 @@ jvmOpts: ""
 ## @param jvmCeOpts Values to add to SONAR_CE_JAVAOPTS
 ##
 jvmCeOpts: ""
-## @param extraProperties List of extra properties to be set in the sonar.properties file (key=value format)
-## e.g:
-## extraProperties:
-##   - my.sonar.property1=property_value1
-##   - my.sonar.property2=property_value2
-##
-extraProperties: []
-## SMTP mail delivery configuration
-## ref: https://github.com/bitnami/containers/tree/main/bitnami/spring/#smtp-configuration
-## @param smtpHost SMTP server host
-## @param smtpPort SMTP server port
-## @param smtpUser SMTP username
-## @param smtpPassword SMTP user password
-## @param smtpProtocol SMTP protocol
-##
-smtpHost: ""
-smtpPort: ""
-smtpUser: ""
-smtpPassword: ""
-smtpProtocol: ""
-## @param smtpExistingSecret The name of an existing secret with SMTP credentials
-## NOTE: Must contain key `smtp-password`
-## NOTE: When it's set, the `smtpPassword` parameter is ignored
-##
-smtpExistingSecret: ""
 ## @param command Override default container command (useful when using custom images)
 ##
 command: []
@@ -735,7 +692,7 @@ rbac:
 ## @param serviceAccount.annotations Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
 ##
 serviceAccount:
-  create: true
+  create: false
   name: ""
   automountServiceAccountToken: true
   annotations: {}
@@ -928,88 +885,121 @@ metrics:
     ##
     exporterOtlpEndpoint: http://grafana-agent.monitoring.svc.cluster.local:4317
 
-mysql:
-  enabled: false
-
-postgresql:
-  enabled: false
-
-## @section External Database settings
+## @section Spring Boot App parameters
 ##
-
-## External Database Configuration
-## All of these values are only used when mysql.enabled is set to false
-##
-externalDatabase:
-  ## @param externalDatabase.type Database type, ex mysql, postgresql
+spring:
+  ## Database Configuration
   ##
-  type: mysql
-  ## @param externalDatabase.host Host of an external MySQL instance to connect (only if mysql.enabled=false)
-  ##
-  host: ""
-  ## @param externalDatabase.user User of an external MySQL instance to connect (only if mysql.enabled=false)
-  ##
-  user: ""
-  ## @param externalDatabase.password Password of an external MySQL instance to connect (only if mysql.enabled=false)
-  ##
-  password: ""
-  ## @param externalDatabase.existingSecret Secret containing the password of an external MySQL instance to connect (only if mysql.enabled=false)
-  ## Name of an existing secret resource containing the DB password in a 'password' key
-  ##
-  existingSecret: ""
-  ## @param externalDatabase.database Database inside an external MySQL to connect (only if mysql.enabled=false)
-  ##
-  database: spring
-  ## @param externalDatabase.port Port of an external MySQL to connect (only if mysql.enabled=false)
-  ##
-  port: 3306
-
-## @section Redis&reg; parameters
-
-## Redis&reg; chart configuration
-## ref: https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
-## @param redis.enabled Switch to enable or disable the Redis&reg; helm
-## @param redis.auth.enabled Enable password authentication
-## @param redis.auth.password Redis&reg; password
-## @param redis.auth.existingSecret The name of an existing secret with Redis&reg; credentials
-## @param redis.architecture Redis&reg; architecture. Allowed values: `standalone` or `replication`
-##
-redis:
-  enabled: false
-  auth:
-    enabled: true
-    ## Redis&reg; password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
-    ## It should always be set using the password value or in the existingSecret to avoid issues
-    ## with Discourse.
-    ## The password value is ignored if existingSecret is set
-    password: ""
-    existingSecret: ""
-  ## @section Redis&reg; common configuration parameters
-  ## https://github.com/bitnami/containers/tree/main/bitnami/redis#configuration
-  ##
-
-  ## @param architecture Redis&reg; architecture. Allowed values: `standalone` or `replication`
-  ##
-  architecture: standalone
-  ## TLS configuration
-  ##
-  tls:
-    ## @param tls.enabled Enable TLS traffic
+  datasource:
+    ## @param spring.datasource.enabled Enable Spring Boot App datasource
     ##
     enabled: false
+    ## @param spring.datasource.jdbcUrl JDBC URL of an database instance to connect
+    ##
+    ## MySQL/MariaDB: jdbc:mariadb://localhost:3306/sample_database
+    ## PostgreSQL: jdbc:postgresql://localhost:5432/sample_database
+    ##
+    jdbcUrl: ""
+    ## @param spring.datasource.r2dbcUrl R2DBC URL of an database instance to connect
+    ## Only used when springWebflux is true
+    ##
+    ## MySQL/MariaDB: r2dbc:mariadb://localhost:3306/sample_database
+    ## PostgreSQL: r2dbc:postgresql://localhost:5432/sample_database
+    ##
+    r2dbcUrl: ""
+    ## @param spring.datasource.username User of an external MySQL instance to connect (only if mysql.enabled=false)
+    ##
+    username: ""
+    ## @param spring.datasource.password Password of an external MySQL instance to connect (only if mysql.enabled=false)
+    ##
+    password: ""
+    ## @param spring.datasource.existingSecret Secret containing the password of an external MySQL instance to connect (only if mysql.enabled=false)
+    ## Name of an existing secret resource containing the DB password in a 'password' key
+    ##
+    existingSecret: ""
+  ## External Redis&reg; configuration
+  ##
+  redis:
+    ## @param spring.redis.enabled Enable Spring Boot App redis
+    ##
+    enabled: false
+    ## @param spring.redis.host Redis&reg; host
+    ##
+    host: localhost
+    ## @param spring.redis.port Redis&reg; port number
+    ##
+    port: 6379
+    ## @param spring.redis.password Redis&reg; password
+    ##
+    password: ""
+    ## @param spring.redis.existingSecret Name of an existing secret resource containing the Redis&trade credentials
+    ##
+    existingSecret: ""
+    ## @param spring.redis.existingSecretPasswordKey Name of an existing secret key containing the Redis&trade credentials
+    ##
+    existingSecretPasswordKey: "redis-password"
+    ## @param spring.redis.tlsEnabled Enable TLS for Redis&reg;
+    ##
+    tlsEnabled: false
+    ## @param spring.redis.jhipsterCache Configuration for JHipster Cache
+    ##
+    jhipsterCache:
+      ## @param spring.redis.jhipsterCache.enabled Enable JHipster Cache for Redis&reg;
+      ##
+      enabled: false
+      ## @param spring.redis.jhipsterCache.redisServer Redis&reg; connection URL
+      ##
+      ## Example:
+      ## redis://:$(SPRING_REDIS_PASSWORD)@localhost:6379
+      ## rediss://:$(SPRING_REDIS_PASSWORD)@localhost:6379
+      ##
+      redisServer: ""
+      ## @param spring.redis.jhipsterCache.redisCluster Redis&reg; cluster
+      ##
+      redisCluster: false
+  ## Spring Boot App mail delivery configuration
+  ##
+  mail:
+    ## SMTP mail delivery configuration
+    ##
+    smtp:
+      ## @param spring.mail.smtp.enabled Enable SMTP mail delivery configuration
+      ##
+      enabled: false
+      ## @param spring.mail.smtp.host SMTP server host
+      ##
+      host: ""
+      ## @param spring.mail.smtp.port SMTP server port
+      ##
+      port: ""
+      ## @param spring.mail.smtp.user SMTP username
+      ##
+      user: ""
+      ## @param spring.mail.smtp.password SMTP user password
+      ##
+      password: ""
+      ## @param spring.mail.smtp.protocol SMTP protocol
+      ##
+      protocol: ""
+      ## @param spring.mail.smtp.existingSecret The name of an existing secret with SMTP credentials
+      ##
+      existingSecret: ""
+      ## @param spring.mail.smtp.existingSecretPasswordKey The name of an existing secret key with SMTP credentials
+      ##
+      existingSecretPasswordKey: "smtp-password"
+      ## JHipster Mail configuration
+      ##
+      jhipsterMail:
+        ## @param spring.mail.jhipsterMail.enabled Enable JHipster Mail for SMTP mail delivery configuration
+        ##
+        enabled: false
+        ## @param spring.mail.jhipsterMail.from JHipster Mail from
+        ##
+        from: ""
 
-## External Redis&reg; configuration
-## All of these values are only used when redis.enabled is set to false
-## @param externalRedis.host Redis&reg; host
-## @param externalRedis.port Redis&reg; port number
-## @param externalRedis.password Redis&reg; password
-## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis&trade credentials
-## @param externalRedis.existingSecretPasswordKey Name of an existing secret key containing the Redis&trade credentials
+## @param extraDeployments Array of extra deployments to deploy with the release
 ##
-externalRedis:
-  enabled: true
-  host: localhost
-  port: 6379
-  password: ""
-  existingSecret: ""
-  existingSecretPasswordKey: "redis-password"
+## extraDeployments:
+##   worker:
+##     springProfilesActive: "prod,no-liquibase,worker"
+extraDeployments: {}

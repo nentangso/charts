@@ -94,34 +94,6 @@ fi
 {{- end -}}
 
 {{/*
-Compile all warnings into a single message.
-*/}}
-{{- define "spring.validateValues" -}}
-{{- $messages := list -}}
-{{- $messages := append $messages (include "spring.validateValues.database" .) -}}
-{{- $messages := without $messages "" -}}
-{{- $message := join "\n" $messages -}}
-
-{{- if $message -}}
-{{-   printf "\nVALUES VALIDATION:\n%s" $message -}}
-{{- end -}}
-{{- end -}}
-
-{{/* Validate values of Spring Boot - Database */}}
-{{- define "spring.validateValues.database" -}}
-{{- if and (not .Values.mysql.enabled) (or (empty .Values.externalDatabase.host) (empty .Values.externalDatabase.port) (empty .Values.externalDatabase.database)) -}}
-spring: database
-   You disable the MySQL installation but you did not provide the required parameters
-   to use an external database. To use an external database, please ensure you provide
-   (at least) the following values:
-
-       externalDatabase.host=DB_SERVER_HOST
-       externalDatabase.port=DB_SERVER_PORT
-       externalDatabase.database=DB_NAME
-{{- end -}}
-{{- end -}}
-
-{{/*
 Set spring.jvmOpts
 */}}
 {{- define "spring.jvmOpts" -}}
@@ -173,110 +145,29 @@ Set spring.javaOpts
 {{/*
 Return the Spring Datasource URL
 */}}
-{{- define "spring.datasource.jdbc_url" -}}
-{{ include "spring.datasource.jdbc_protocol" . }}{{ include "spring.datasource.host" . }}:{{ include "spring.datasource.port" . }}/{{ include "spring.datasource.database" . }}{{ include "spring.datasource.parameters" . }}
+{{- define "spring.datasource.jdbcUrl" -}}
+{{- .Values.spring.datasource.jdbcUrl -}}
 {{- end -}}
 
 {{/*
-Return the Database jdbc protocol
+Return the Spring r2dbc URL
 */}}
-{{- define "spring.datasource.jdbc_protocol" -}}
-jdbc:{{ include "spring.datasource.type" . }}://
-{{- end -}}
-
-{{/*
-Return the Database type
-*/}}
-{{- define "spring.datasource.type" -}}
-{{- if .Values.externalDatabase.type -}}
-{{- printf "%s" .Values.externalDatabase.type -}}
-{{- else -}}
-{{- printf "%s" "mysql" -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the Database Hostname
-*/}}
-{{- define "spring.datasource.host" -}}
-{{- if eq "mysql" .Values.externalDatabase.type -}}
-{{- ternary (include "spring.mysql.fullname" .) .Values.externalDatabase.host .Values.mysql.enabled -}}
-{{- else -}}
-{{- printf "%s" .Values.externalDatabase.host -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create a default fully qualified app name for MySQL
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "spring.mysql.fullname" -}}
-{{- include "common.names.dependency.fullname" (dict "chartName" "mysql" "chartValues" .Values.mysql "context" $) -}}
-{{- end -}}
-
-{{/*
-Return the Database Port
-*/}}
-{{- define "spring.datasource.port" -}}
-{{- if eq "mysql" .Values.externalDatabase.type -}}
-{{- ternary "3306" .Values.externalDatabase.port .Values.mysql.enabled -}}
-{{- else -}}
-{{- .Values.externalDatabase.port -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the Database Name
-*/}}
-{{- define "spring.datasource.database" -}}
-{{- if and (eq "mysql" .Values.externalDatabase.type) .Values.mysql.enabled }}
-    {{- if .Values.global.mysql }}
-        {{- if .Values.global.mysql.auth }}
-            {{- coalesce .Values.global.mysql.auth.database .Values.mysql.auth.database -}}
-        {{- else -}}
-            {{- .Values.mysql.auth.database -}}
-        {{- end -}}
-    {{- else -}}
-        {{- .Values.mysql.auth.database -}}
-    {{- end -}}
-{{- else -}}
-    {{- .Values.externalDatabase.database -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the Database parameters
-*/}}
-{{- define "spring.datasource.parameters" -}}
-{{- if eq "mysql" .Values.externalDatabase.type -}}
-{{- printf "%s" "?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true" -}}
-{{- end -}}
+{{- define "spring.datasource.r2dbcUrl" -}}
+{{- .Values.spring.datasource.r2dbcUrl -}}
 {{- end -}}
 
 {{/*
 Return the Database User
 */}}
 {{- define "spring.datasource.username" -}}
-{{- if and (eq "mysql" .Values.externalDatabase.type) .Values.mysql.enabled }}
-    {{- if .Values.global.mysql }}
-        {{- if .Values.global.mysql.auth }}
-            {{- coalesce .Values.global.mysql.auth.username .Values.mysql.auth.username -}}
-        {{- else -}}
-            {{- .Values.mysql.auth.username -}}
-        {{- end -}}
-    {{- else -}}
-        {{- .Values.mysql.auth.username -}}
-    {{- end -}}
-{{- else -}}
-    {{- .Values.externalDatabase.user -}}
-{{- end -}}
+{{- .Values.spring.datasource.username -}}
 {{- end -}}
 
 {{/*
 Return true if a db secret object should be created
 */}}
-{{- define "spring.db.createSecret" -}}
-{{- if and (not .Values.mysql.enabled) (not .Values.externalDatabase.existingSecret) }}
+{{- define "spring.datasource.createSecret" -}}
+{{- if and .Values.spring.datasource.enabled .Values.spring.datasource.password (not .Values.spring.datasource.existingSecret) }}
     {{- true -}}
 {{- end -}}
 {{- end -}}
@@ -285,87 +176,28 @@ Return true if a db secret object should be created
 Return the Database Secret Name
 */}}
 {{- define "spring.datasource.secretName" -}}
-{{- if and (eq "mysql" .Values.externalDatabase.type) .Values.mysql.enabled }}
-    {{- if .Values.global.mysql }}
-        {{- if .Values.global.mysql.auth }}
-            {{- if .Values.global.mysql.auth.existingSecret }}
-                {{- tpl .Values.global.mysql.auth.existingSecret $ -}}
-            {{- else -}}
-                {{- default (include "spring.mysql.fullname" .) (tpl .Values.mysql.auth.existingSecret $) -}}
-            {{- end -}}
-        {{- else -}}
-            {{- default (include "spring.mysql.fullname" .) (tpl .Values.mysql.auth.existingSecret $) -}}
-        {{- end -}}
-    {{- else -}}
-        {{- default (include "spring.mysql.fullname" .) (tpl .Values.mysql.auth.existingSecret $) -}}
-    {{- end -}}
-{{- else -}}
-    {{- default (printf "%s-externaldb" (include "common.names.fullname" .)) (tpl .Values.externalDatabase.existingSecret $) -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the Spring r2dbc URL
-*/}}
-{{- define "spring.datasource.r2dbc_url" -}}
-{{ include "spring.datasource.r2dbc_protocol" . }}{{ include "spring.datasource.host" . }}:{{ include "spring.datasource.port" . }}/{{ include "spring.datasource.database" . }}{{ include "spring.datasource.parameters" . }}
-{{- end -}}
-
-{{/*
-Return the Database r2dbc protocol
-*/}}
-{{- define "spring.datasource.r2dbc_protocol" -}}
-{{- if eq "mysql" .Values.externalDatabase.type -}}
-r2dbc:mariadb://
-{{- else -}}
-r2dbc:{{ include "spring.datasource.type" . }}://
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the Redis&reg; server
-*/}}
-{{- define "spring.redis.server" -}}
-{{- if .Values.redis.tls.enabled -}}
-{{- printf "rediss://" -}}
-{{- else -}}
-{{- printf "redis://" -}}
-{{- end -}}
-{{- if or (and .Values.redis.enabled .Values.redis.auth.enabled) (and (not .Values.redis.enabled) (or .Values.externalRedis.password .Values.externalRedis.existingSecret)) }}
-{{- printf ":%s@" "$(SPRING_REDIS_PASSWORD)" -}}
-{{- end -}}
-{{- include "spring.redis.host" . -}}
-{{- printf ":" -}}
-{{- include "spring.redis.port" . -}}
+{{- default (printf "%s-spring-datasource" (include "common.names.fullname" .)) (tpl .Values.spring.datasource.existingSecret $) -}}
 {{- end -}}
 
 {{/*
 Return the Redis&reg; hostname
 */}}
 {{- define "spring.redis.host" -}}
-{{- ternary (printf "%s-master" (include "spring.redis.fullname" .)) .Values.externalRedis.host .Values.redis.enabled -}}
+{{- default "localhost" .Values.spring.redis.host -}}
 {{- end -}}
 
 {{/*
 Return the Redis&reg; port
 */}}
 {{- define "spring.redis.port" -}}
-{{- ternary "6379" .Values.externalRedis.port .Values.redis.enabled -}}
-{{- end -}}
-
-{{/*
-Create a default fully qualified app name
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "spring.redis.fullname" -}}
-{{- include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.redis "context" $) -}}
+{{- default "6379" .Values.spring.redis.port -}}
 {{- end -}}
 
 {{/*
 Return true if a redis secret object should be created
 */}}
 {{- define "spring.redis.createSecret" -}}
-{{- if and (not .Values.redis.enabled) (not .Values.externalRedis.existingSecret) .Values.externalRedis.password }}
+{{- if and .Values.spring.redis.enabled .Values.spring.redis.password (not .Values.spring.redis.existingSecret) }}
     {{- true -}}
 {{- end -}}
 {{- end -}}
@@ -374,16 +206,10 @@ Return true if a redis secret object should be created
 Return the Redis&reg; secret name
 */}}
 {{- define "spring.redis.secretName" -}}
-{{- if .Values.redis.enabled }}
-    {{- if .Values.redis.auth.existingSecret }}
-        {{- printf "%s" .Values.redis.auth.existingSecret -}}
-    {{- else -}}
-        {{- printf "%s" (include "spring.redis.fullname" .) -}}
-    {{- end -}}
-{{- else if .Values.externalRedis.existingSecret }}
-    {{- printf "%s" .Values.externalRedis.existingSecret -}}
+{{- if .Values.spring.redis.existingSecret }}
+    {{- printf "%s" .Values.spring.redis.existingSecret -}}
 {{- else -}}
-    {{- printf "%s-redis" (include "common.names.fullname" .) -}}
+    {{- printf "%s-spring-redis" (include "common.names.fullname" .) -}}
 {{- end -}}
 {{- end -}}
 
@@ -391,14 +217,10 @@ Return the Redis&reg; secret name
 Return the Redis&reg; secret key
 */}}
 {{- define "spring.redis.secretPasswordKey" -}}
-{{- if .Values.redis.enabled -}}
-    {{- print "redis-password" -}}
+{{- if .Values.spring.redis.existingSecret -}}
+    {{- default "redis-password" .Values.spring.redis.existingSecretPasswordKey }}
 {{- else -}}
-    {{- if .Values.externalRedis.existingSecret -}}
-        {{- default "redis-password" .Values.externalRedis.existingSecretPasswordKey }}
-    {{- else -}}
-        {{- print "redis-password" -}}
-    {{- end -}}
+    {{- print "redis-password" -}}
 {{- end -}}
 {{- end -}}
 
@@ -406,7 +228,7 @@ Return the Redis&reg; secret key
 Return whether Redis&reg; uses password authentication or not
 */}}
 {{- define "spring.redis.auth.enabled" -}}
-{{- if or (and .Values.redis.enabled .Values.redis.auth.enabled) (and (not .Values.redis.enabled) (or .Values.externalRedis.password .Values.externalRedis.existingSecret)) }}
+{{- if or .Values.spring.redis.password .Values.spring.redis.existingSecret }}
     {{- true -}}
 {{- end -}}
 {{- end -}}

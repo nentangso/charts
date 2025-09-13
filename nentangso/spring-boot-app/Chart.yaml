@@ -4,10 +4,6 @@ annotations:
 apiVersion: v2
 appVersion: 2.x.x
 dependencies:
-  - condition: redis.enabled
-    name: redis
-    repository: https://charts.bitnami.com/bitnami
-    version: 17.x.x
   - name: common
     repository: https://charts.bitnami.com/bitnami
     tags:
@@ -33,4 +29,4 @@ maintainers:
 name: spring-boot-app
 sources:
   - https://github.com/spring-projects/spring-boot
-version: 0.2.4
+version: 1.0.0

@@ -64,11 +64,6 @@ To access your Spring Boot site from outside the cluster follow the steps below:
 
 2. Open a browser and access Spring Boot using the obtained URL.
 
-3. Login with the following credentials below:
-
-  echo Username: {{ .Values.springUsername }}
-  echo Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ template "common.names.fullname" . }} -o jsonpath="{.data.spring-password}" | base64 -d)
-
 {{- if .Values.metrics.jmx.enabled }}
 
 You can access the JMX Prometheus metrics following the steps below:
@@ -86,4 +81,3 @@ You can access the JMX Prometheus metrics following the steps below:
 {{- include "common.warnings.rollingTag" .Values.image }}
 {{- include "common.warnings.rollingTag" .Values.volumePermissions.image }}
 {{- include "common.warnings.rollingTag" .Values.sysctl.image }}
-{{- include "spring.validateValues" . }}

@@ -7,6 +7,7 @@ metadata:
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
+    app.kubernetes.io/component: default
   {{- if .Values.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
@@ -19,17 +20,18 @@ spec:
   {{- end }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: default
   template:
     metadata:
       annotations:
         {{- if (include "spring.createSecret" .) }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- end }}
-        {{- if (include "spring.db.createSecret" .) }}
-        checksum/secret-externaldb: {{ include (print $.Template.BasePath "/secret-external-db.yaml") . | sha256sum }}
+        {{- if (include "spring.datasource.createSecret" .) }}
+        checksum/secret-spring-datasource: {{ include (print $.Template.BasePath "/secret-spring-datasource.yaml") . | sha256sum }}
         {{- end }}
         {{- if (include "spring.redis.createSecret" .) }}
-        checksum/secret-redis: {{ include (print $.Template.BasePath "/secret-external-redis.yaml") . | sha256sum }}
+        checksum/secret-spring-redis: {{ include (print $.Template.BasePath "/secret-spring-redis.yaml") . | sha256sum }}
         {{- end }}
         {{- if .Values.metrics.jmx.enabled }}
         checksum/jmx-configuration: {{ include (print $.Template.BasePath "/jmx-configmap.yaml") . | sha256sum }}
@@ -41,6 +43,7 @@ spec:
         {{- if .Values.podLabels }}
         {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
         {{- end }}
+        app.kubernetes.io/component: default
         {{- if .Values.metrics.datadog.enabled }}
         tags.datadoghq.com/env: {{ printf "%s" .Values.metrics.datadog.env | quote }}
         tags.datadoghq.com/service: {{ include "common.names.fullname" . }}
@@ -171,9 +174,10 @@ spec:
             - name: SONARQUBE_MOUNTED_PROVISIONING_DIR
               value: {{ .Values.provisioningFolder }}
             {{- end }}
-            {{- if not .Values.springWebflux}}
+            {{- if .Values.spring.datasource.enabled }}
+            {{- if not .Values.springWebflux }}
             - name: SPRING_DATASOURCE_URL
-              value: {{ include "spring.datasource.jdbc_url" . | quote }}
+              value: {{ include "spring.datasource.jdbcUrl" . | quote }}
             - name: SPRING_DATASOURCE_USERNAME
               value: {{ include "spring.datasource.username" . | quote }}
             - name: SPRING_DATASOURCE_PASSWORD
@@ -181,11 +185,11 @@ spec:
                 secretKeyRef:
                   name: {{ include "spring.datasource.secretName" . }}
                   key: password
-            {{- else}}
+            {{- else }}
             - name: SPRING_LIQUIBASE_URL
-              value: {{ include "spring.datasource.jdbc_url" . | quote }}
+              value: {{ include "spring.datasource.jdbcUrl" . | quote }}
             - name: SPRING_R2DBC_URL
-              value: {{ include "spring.datasource.r2dbc_url" . | quote }}
+              value: {{ include "spring.datasource.r2dbcUrl" . | quote }}
             - name: SPRING_R2DBC_USERNAME
               value: {{ include "spring.datasource.username" . | quote }}
             - name: SPRING_R2DBC_PASSWORD
@@ -193,61 +197,58 @@ spec:
                 secretKeyRef:
                   name: {{ include "spring.datasource.secretName" . }}
                   key: password
-            {{- end}}
-            {{- if or .Values.redis.enabled .Values.externalRedis.enabled }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.spring.redis.enabled }}
             - name: SPRING_REDIS_HOST
               value: {{ include "spring.redis.host" . | quote }}
             - name: SPRING_REDIS_PORT
               value: {{ include "spring.redis.port" . | quote }}
-            {{- if .Values.redis.tls.enabled }}
+            {{- if .Values.spring.redis.tlsEnabled }}
             - name: SPRING_REDIS_SSL
               value: "true"
-            {{- end}}
-            {{- if or (and .Values.redis.enabled .Values.redis.auth.enabled) (and (not .Values.redis.enabled) (or .Values.externalRedis.password .Values.externalRedis.existingSecret)) }}
+            {{- end }}
+            {{- if or .Values.spring.redis.password .Values.spring.redis.existingSecret }}
             - name: SPRING_REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "spring.redis.secretName" . }}
                   key: {{ include "spring.redis.secretPasswordKey" . }}
             {{- end }}
+            {{- if .Values.spring.redis.jhipsterCache.enabled }}
             - name: JHIPSTER_CACHE_REDIS_SERVER
-              value: {{ include "spring.redis.server" . | quote }}
-            {{- if eq "replication" .Values.redis.architecture }}
+              value: {{ .Values.spring.redis.jhipsterCache.redisServer | quote }}
             - name: JHIPSTER_CACHE_REDIS_CLUSTER
-              value: "true"
+              value: {{ default "false" .Values.spring.redis.jhipsterCache.redisCluster | quote }}
             {{- end }}
             {{- end }}
-            - name: JHIPSTER_MAIL_FROM
-              value: {{ .Values.springEmail | quote }}
-            {{- if .Values.smtpHost }}
+            {{- if .Values.spring.mail.smtp.enabled }}
             - name: SPRING_MAIL_HOST
-              value: {{ .Values.smtpHost | quote }}
-            {{- end }}
-            {{- if .Values.smtpPort }}
+              value: {{ .Values.spring.mail.smtp.host | quote }}
             - name: SPRING_MAIL_PORT
-              value: {{ .Values.smtpPort | quote }}
-            {{- end }}
-            {{- if .Values.smtpUser }}
+              value: {{ .Values.spring.mail.smtp.port | quote }}
+            {{- if .Values.spring.mail.smtp.user }}
             - name: SPRING_MAIL_USER
-              value: {{ .Values.smtpUser | quote }}
+              value: {{ .Values.spring.mail.smtp.user | quote }}
             {{- end }}
-            {{- if or .Values.smtpPassword .Values.smtpExistingSecret }}
+            {{- if or .Values.spring.mail.smtp.password .Values.spring.mail.smtp.existingSecret }}
             - name: SPRING_MAIL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "spring.smtpSecretName" . }}
-                  key: smtp-password
+                  name: {{ include "spring.mail.smtp.secretName" . }}
+                  key: {{ include "spring.mail.smtp.secretPasswordKey" . }}
             {{- end }}
-            {{- if .Values.smtpProtocol }}
+            {{- if .Values.spring.mail.smtp.protocol }}
             - name: SPRING_MAIL_PROTOCOL
-              value: {{ .Values.smtpProtocol | quote }}
+              value: {{ .Values.spring.mail.smtp.protocol | quote }}
+            {{- end }}
+            {{- if .Values.spring.mail.jhipsterMail.enabled }}
+            - name: JHIPSTER_MAIL_FROM
+              value: {{ .Values.springEmail | quote }}
+            {{- end }}
             {{- end }}
             - name: SERVER_PORT
               value: {{ .Values.containerPorts.http | quote }}
-            {{- if .Values.extraProperties }}
-            - name: SONARQUBE_EXTRA_PROPERTIES
-              value: {{ join "," .Values.extraProperties | quote }}
-            {{- end }}
             - name: SPRING_APPLICATION_JSON
               value: {{ .Values.springApplicationYaml | toJson | quote }}
             - name: JAVA_OPTS
@@ -286,6 +287,10 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
+            {{- if (include "spring.createSecret" .) }}
+            - secretRef:
+                name: {{ include "common.names.fullname" . }}
+            {{- end }}
             {{- if .Values.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsCM "context" $) }}
