@@ -122,23 +122,35 @@ jobs:
         with:
           version: ${{ env.HELM_VERSION }}
 
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
       - name: Validate index.yaml
         run: |
           echo "Validating index.yaml"
           if [[ -f "index.yaml" ]]; then
-            # Basic YAML validation
-            python3 -c "import yaml; yaml.safe_load(open('index.yaml'))"
+            # Basic YAML validation using yq
+            yq eval '.' index.yaml > /dev/null
             echo "index.yaml is valid YAML"
             
             # Check if it has required structure
-            python3 -c "
-            import yaml
-            with open('index.yaml') as f:
-                data = yaml.safe_load(f)
-            assert 'apiVersion' in data, 'Missing apiVersion'
-            assert 'entries' in data, 'Missing entries'
-            print('index.yaml structure is valid')
-            "
+            if yq eval '.apiVersion' index.yaml > /dev/null 2>&1; then
+              echo "✅ apiVersion field found"
+            else
+              echo "❌ Missing apiVersion field"
+              exit 1
+            fi
+            
+            if yq eval '.entries' index.yaml > /dev/null 2>&1; then
+              echo "✅ entries field found"
+            else
+              echo "❌ Missing entries field"
+              exit 1
+            fi
+            
+            echo "✅ index.yaml structure is valid"
           else
             echo "index.yaml not found - this is OK for new repositories"
           fi
