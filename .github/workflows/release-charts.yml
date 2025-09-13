@@ -1,0 +1,193 @@
+name: Release Helm Charts
+
+on:
+  push:
+    tags:
+      - 'spring-boot-app-*'
+      - 'webapp-*'
+  workflow_dispatch:
+    inputs:
+      chart_name:
+        description: 'Tên chart cần release (spring-boot-app hoặc webapp)'
+        required: true
+        default: 'spring-boot-app'
+        type: choice
+        options:
+          - spring-boot-app
+          - webapp
+      version:
+        description: 'Phiên bản mới (ví dụ: 0.2.4)'
+        required: true
+        type: string
+
+env:
+  HELM_VERSION: "3.13.0"
+
+jobs:
+  release-chart:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: ${{ env.HELM_VERSION }}
+
+      - name: Determine chart info
+        id: chart-info
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            CHART_NAME="${{ github.event.inputs.chart_name }}"
+            NEW_VERSION="${{ github.event.inputs.version }}"
+          else
+            # Extract chart name and version from tag
+            TAG_NAME="${{ github.ref_name }}"
+            if [[ "$TAG_NAME" =~ ^(spring-boot-app|webapp)-(.+)$ ]]; then
+              CHART_NAME="${BASH_REMATCH[1]}"
+              NEW_VERSION="${BASH_REMATCH[2]}"
+            else
+              echo "Invalid tag format. Expected: chart-name-version"
+              exit 1
+            fi
+          fi
+          
+          echo "chart_name=$CHART_NAME" >> $GITHUB_OUTPUT
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Chart: $CHART_NAME, Version: $NEW_VERSION"
+
+      - name: Update Chart.yaml version
+        run: |
+          CHART_NAME="${{ steps.chart-info.outputs.chart_name }}"
+          NEW_VERSION="${{ steps.chart-info.outputs.version }}"
+          
+          # Update version in Chart.yaml
+          sed -i "s/^version: .*/version: $NEW_VERSION/" "nentangso/$CHART_NAME/Chart.yaml"
+          
+          echo "Updated Chart.yaml version to $NEW_VERSION"
+          cat "nentangso/$CHART_NAME/Chart.yaml"
+
+      - name: Package Helm chart
+        run: |
+          CHART_NAME="${{ steps.chart-info.outputs.chart_name }}"
+          NEW_VERSION="${{ steps.chart-info.outputs.version }}"
+          
+          # Package the chart
+          helm package "nentangso/$CHART_NAME" --destination .
+          
+          # Verify package was created
+          PACKAGE_FILE="${CHART_NAME}-${NEW_VERSION}.tgz"
+          if [[ -f "$PACKAGE_FILE" ]]; then
+            echo "Package created: $PACKAGE_FILE"
+            ls -la "$PACKAGE_FILE"
+          else
+            echo "Package file not found: $PACKAGE_FILE"
+            exit 1
+          fi
+
+      - name: Create draft release
+        id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.chart-info.outputs.chart_name }}-${{ steps.chart-info.outputs.version }}
+          release_name: Release ${{ steps.chart-info.outputs.chart_name }} ${{ steps.chart-info.outputs.version }}
+          body: |
+            ## Helm Chart Release: ${{ steps.chart-info.outputs.chart_name }} v${{ steps.chart-info.outputs.version }}
+            
+            ### Changes
+            - Updated chart version to ${{ steps.chart-info.outputs.version }}
+            
+            ### Installation
+            ```bash
+            helm repo add nentangso https://nentangso.github.io/charts
+            helm repo update
+            helm install my-${{ steps.chart-info.outputs.chart_name }} nentangso/${{ steps.chart-info.outputs.chart_name }} --version ${{ steps.chart-info.outputs.version }}
+            ```
+          draft: true
+          prerelease: false
+
+      - name: Upload chart package to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: ./${{ steps.chart-info.outputs.chart_name }}-${{ steps.chart-info.outputs.version }}.tgz
+          asset_name: ${{ steps.chart-info.outputs.chart_name }}-${{ steps.chart-info.outputs.version }}.tgz
+          asset_content_type: application/gzip
+
+      - name: Update Helm repository index
+        run: |
+          CHART_NAME="${{ steps.chart-info.outputs.chart_name }}"
+          NEW_VERSION="${{ steps.chart-info.outputs.version }}"
+          PACKAGE_FILE="${CHART_NAME}-${NEW_VERSION}.tgz"
+          
+          # Download existing index.yaml if it exists
+          if [[ -f "index.yaml" ]]; then
+            echo "Using existing index.yaml"
+          else
+            echo "Creating new index.yaml"
+            touch index.yaml
+          fi
+          
+          # Update the index with the new chart
+          helm repo index . --url https://nentangso.github.io/charts --merge index.yaml
+          
+          echo "Updated index.yaml:"
+          cat index.yaml
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Add the new package and updated files
+          git add "${{ steps.chart-info.outputs.chart_name }}-${{ steps.chart-info.outputs.version }}.tgz"
+          git add "nentangso/${{ steps.chart-info.outputs.chart_name }}/Chart.yaml"
+          git add index.yaml
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Release ${{ steps.chart-info.outputs.chart_name }} v${{ steps.chart-info.outputs.version }}"
+            git push
+          fi
+
+      - name: Publish release
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: release } = await github.rest.repos.getRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: ${{ steps.create-release.outputs.id }}
+            });
+            
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: ${{ steps.create-release.outputs.id }},
+              draft: false
+            });
+            
+            console.log('Release published successfully');
+
+      - name: Output release info
+        run: |
+          echo "🎉 Chart released successfully!"
+          echo "Chart: ${{ steps.chart-info.outputs.chart_name }}"
+          echo "Version: ${{ steps.chart-info.outputs.version }}"
+          echo "Release URL: ${{ steps.create-release.outputs.html_url }}"
+          echo "Package URL: https://github.com/${{ github.repository }}/releases/download/${{ steps.chart-info.outputs.chart_name }}-${{ steps.chart-info.outputs.version }}/${{ steps.chart-info.outputs.chart_name }}-${{ steps.chart-info.outputs.version }}.tgz"

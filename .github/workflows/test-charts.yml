@@ -1,0 +1,159 @@
+name: Test Helm Charts
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'nentangso/**'
+      - '.github/workflows/test-charts.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'nentangso/**'
+      - '.github/workflows/test-charts.yml'
+
+env:
+  HELM_VERSION: "3.13.0"
+
+jobs:
+  test-charts:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        chart: [spring-boot-app, webapp]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: ${{ env.HELM_VERSION }}
+
+      - name: Lint chart
+        run: |
+          echo "Linting chart: ${{ matrix.chart }}"
+          helm lint "nentangso/${{ matrix.chart }}"
+
+      - name: Test chart template rendering
+        run: |
+          echo "Testing template rendering for: ${{ matrix.chart }}"
+          helm template test-release "nentangso/${{ matrix.chart }}" --debug
+
+      - name: Test chart with different values
+        run: |
+          echo "Testing chart with custom values: ${{ matrix.chart }}"
+          # Test with minimal values
+          helm template test-release "nentangso/${{ matrix.chart }}" \
+            --set image.repository=test \
+            --set image.tag=test \
+            --debug
+          
+          # Test with all values enabled (if applicable)
+          if [[ "${{ matrix.chart }}" == "spring-boot-app" ]]; then
+            helm template test-release "nentangso/${{ matrix.chart }}" \
+              --set redis.enabled=true \
+              --set image.repository=test \
+              --set image.tag=test \
+              --debug
+          fi
+
+      - name: Package chart
+        run: |
+          echo "Packaging chart: ${{ matrix.chart }}"
+          helm package "nentangso/${{ matrix.chart }}" --destination ./packages
+          ls -la ./packages/
+
+      - name: Validate package
+        run: |
+          echo "Validating package for: ${{ matrix.chart }}"
+          PACKAGE_FILE=$(ls ./packages/${{ matrix.chart }}-*.tgz)
+          echo "Package file: $PACKAGE_FILE"
+          
+          # Extract and validate
+          tar -tzf "$PACKAGE_FILE" > /dev/null
+          echo "Package is valid tar.gz file"
+          
+          # Check if Chart.yaml exists in package
+          if tar -tzf "$PACKAGE_FILE" | grep -q "Chart.yaml"; then
+            echo "Chart.yaml found in package"
+          else
+            echo "ERROR: Chart.yaml not found in package"
+            exit 1
+          fi
+
+      - name: Test chart dependencies
+        run: |
+          echo "Testing dependencies for: ${{ matrix.chart }}"
+          helm dependency update "nentangso/${{ matrix.chart }}"
+          helm dependency list "nentangso/${{ matrix.chart }}"
+
+      - name: Security scan (if available)
+        run: |
+          echo "Running security scan for: ${{ matrix.chart }}"
+          # Note: This requires helm-sec plugin to be installed
+          # helm plugin install https://github.com/helm/helm-sec
+          # helm sec "nentangso/${{ matrix.chart }}"
+          echo "Security scan skipped (plugin not installed)"
+
+      - name: Upload test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-artifacts-${{ matrix.chart }}
+          path: |
+            ./packages/
+            nentangso/${{ matrix.chart }}/Chart.yaml
+            nentangso/${{ matrix.chart }}/values.yaml
+          retention-days: 7
+
+  validate-index:
+    runs-on: ubuntu-latest
+    needs: test-charts
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: ${{ env.HELM_VERSION }}
+
+      - name: Validate index.yaml
+        run: |
+          echo "Validating index.yaml"
+          if [[ -f "index.yaml" ]]; then
+            # Basic YAML validation
+            python3 -c "import yaml; yaml.safe_load(open('index.yaml'))"
+            echo "index.yaml is valid YAML"
+            
+            # Check if it has required structure
+            python3 -c "
+            import yaml
+            with open('index.yaml') as f:
+                data = yaml.safe_load(f)
+            assert 'apiVersion' in data, 'Missing apiVersion'
+            assert 'entries' in data, 'Missing entries'
+            print('index.yaml structure is valid')
+            "
+          else
+            echo "index.yaml not found - this is OK for new repositories"
+          fi
+
+      - name: Test repository index generation
+        run: |
+          echo "Testing repository index generation"
+          # Create a temporary package for testing
+          helm package "nentangso/spring-boot-app" --destination ./temp
+          helm repo index ./temp --url https://nentangso.github.io/charts
+          
+          if [[ -f "./temp/index.yaml" ]]; then
+            echo "Repository index generated successfully"
+            cat ./temp/index.yaml
+          else
+            echo "ERROR: Failed to generate repository index"
+            exit 1
+          fi
