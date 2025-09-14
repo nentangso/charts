@@ -232,3 +232,35 @@ Return whether Redis&reg; uses password authentication or not
     {{- true -}}
 {{- end -}}
 {{- end -}}
+
+
+{{/*
+Return true if a SMTP secret object should be created
+*/}}
+{{- define "spring.mail.smtp.createSecret" -}}
+{{- if and .Values.spring.mail.smtp.enabled .Values.spring.mail.smtp.password (not .Values.spring.mail.smtp.existingSecret) }}
+    {{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the SMTP Secret Name
+*/}}
+{{- define "spring.mail.smtp.secretName" -}}
+{{- if .Values.spring.mail.smtp.existingSecret }}
+    {{- printf "%s" .Values.spring.mail.smtp.existingSecret -}}
+{{- else -}}
+    {{- printf "%s-spring-mail-smtp" (include "common.names.fullname" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the SMTP Secret Key
+*/}}
+{{- define "spring.mail.smtp.secretPasswordKey" -}}
+{{- if .Values.spring.mail.smtp.existingSecret -}}
+    {{- default "smtp-password" .Values.spring.mail.smtp.existingSecretPasswordKey }}
+{{- else -}}
+    {{- print "smtp-password" -}}
+{{- end -}}
+{{- end -}}

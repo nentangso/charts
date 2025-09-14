@@ -33,6 +33,9 @@ spec:
         {{- if (include "spring.redis.createSecret" .) }}
         checksum/secret-spring-redis: {{ include (print $.Template.BasePath "/secret-spring-redis.yaml") . | sha256sum }}
         {{- end }}
+        {{- if (include "spring.mail.smtp.createSecret" .) }}
+        checksum/secret-spring-mail-smtp: {{ include (print $.Template.BasePath "/secret-spring-mail-smtp.yaml") . | sha256sum }}
+        {{- end }}
         {{- if .Values.metrics.jmx.enabled }}
         checksum/jmx-configuration: {{ include (print $.Template.BasePath "/jmx-configmap.yaml") . | sha256sum }}
         {{- end }}
