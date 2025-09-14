@@ -987,15 +987,15 @@ spring:
       ## @param spring.mail.smtp.existingSecretPasswordKey The name of an existing secret key with SMTP credentials
       ##
       existingSecretPasswordKey: "smtp-password"
-      ## JHipster Mail configuration
+    ## JHipster Mail configuration
+    ##
+    jhipsterMail:
+      ## @param spring.mail.jhipsterMail.enabled Enable JHipster Mail for SMTP mail delivery configuration
       ##
-      jhipsterMail:
-        ## @param spring.mail.jhipsterMail.enabled Enable JHipster Mail for SMTP mail delivery configuration
-        ##
-        enabled: false
-        ## @param spring.mail.jhipsterMail.from JHipster Mail from
-        ##
-        from: ""
+      enabled: false
+      ## @param spring.mail.jhipsterMail.from JHipster Mail from
+      ##
+      from: ""
 
 ## @param extraDeployments Array of extra deployments to deploy with the release
 ##
