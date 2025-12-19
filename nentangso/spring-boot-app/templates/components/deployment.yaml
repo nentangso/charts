@@ -235,7 +235,7 @@ spec:
             - name: SPRING_MAIL_PORT
               value: {{ $.Values.spring.mail.smtp.port | quote }}
             {{- if $.Values.spring.mail.smtp.user }}
-            - name: SPRING_MAIL_USER
+            - name: SPRING_MAIL_USERNAME
               value: {{ $.Values.spring.mail.smtp.user | quote }}
             {{- end }}
             {{- if or $.Values.spring.mail.smtp.password $.Values.spring.mail.smtp.existingSecret }}
